@@ -5,8 +5,12 @@
  */
 package javachains;
 
+import Graphics.FrameXY;
 import java.util.ArrayList;
 import java.util.Random;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RefineryUtilities;
+import testpackage.XYLineChart_AWT;
 
 /**
  *
@@ -18,8 +22,10 @@ public class JavaChains {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        bugfixingmethod();
-        //   functionvaluetest();
+        // bugfixingmethod();
+        //  functionvaluetest();
+        functionPlotTest();
+        
     }
 
     public static void functionvaluetest() {
@@ -44,8 +50,16 @@ public class JavaChains {
         System.out.println(result1);
     }
 
-    public static void jfreechartTest() {
+    public static void functionPlotTest() {
+        SimpleSimulation simulation = new SimpleSimulation(10.0, -4.0, 9.0, 3.0);
+        CoreMachine machine = new CoreMachine();
+        XYSeriesCollection dataset = machine.GenerateData(40, simulation, 1.0);
+        FrameXY chart = new FrameXY("Name of this window", "the function", dataset);
+        chart.pack();
+        RefineryUtilities.centerFrameOnScreen(     chart);
+        chart.setVisible(true);
 
     }
 
+    //Dataset creator will be done here:
 }

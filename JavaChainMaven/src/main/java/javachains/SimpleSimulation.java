@@ -37,17 +37,16 @@ public class SimpleSimulation {
     public double computeEnergyR(double s, double d) {
 
         // This is going to be piecewise linear function depending on some parameters 
-        // The second linear function (assume that it has forrm y = ax+b, then a = -EnergyR/DeltaR b = -a*(s+DeltaR)
-        // The first funtion: a2 = (-EnergyR/DeltaR * DeltaA + EnergyR/DeltaR * (s+DeltaR)-EnergyA)/(DeltaA-s) , b2 = EnergyA-a2*s  
+        
         if (d < s) {
             return Double.NEGATIVE_INFINITY;
         } else if (d < s + this.DeltaA) {
-            double a2 = (-EnergyR / DeltaR * DeltaA + EnergyR / DeltaR * (s + DeltaR) - EnergyA) / (DeltaA - s);
+            double a2 = (EnergyR / (DeltaR * DeltaA)) * (DeltaR - DeltaA) - EnergyA / DeltaA;
             double b2 = EnergyA - a2 * s;
             return a2 * d + b2;
         } else if (d < s + this.DeltaR) {
             double a = -EnergyR / DeltaR;
-            double b = (EnergyR / DeltaR)*(s+DeltaR);
+            double b = (EnergyR / DeltaR) * (s + DeltaR);
             return a * d + b;
         } else {
             return 0;
@@ -66,6 +65,26 @@ public class SimpleSimulation {
         double dy = Math.abs(A.retrieveY() - B.retrieveY());
         double answer = Math.sqrt(dx * dx + dy * dy);
         return answer;
+    }
+
+    public double returnEnergyR() {
+        return this.EnergyR;
+
+    }
+
+    public double returnEnergyA() {
+        return this.EnergyA;
+
+    }
+
+    public double returnDeltaR() {
+        return this.DeltaR;
+
+    }
+
+    public double returnDeltaA() {
+        return this.DeltaA;
+
     }
 
 }
