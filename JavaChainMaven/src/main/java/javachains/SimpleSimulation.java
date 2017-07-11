@@ -5,6 +5,8 @@
  */
 package javachains;
 
+import metrics.Metric;
+
 /**
  *
  * @author John
@@ -18,19 +20,21 @@ public class SimpleSimulation {
     private double EnergyA;
     private double DeltaR;
     private double DeltaA;
+    private Metric metric;
 
-    public SimpleSimulation(double EnergyR, double EnergyA, double DeltaR, double DeltaA) {
+    public SimpleSimulation(double EnergyR, double EnergyA, double DeltaR, double DeltaA, Metric metric) {
         this.EnergyR = EnergyR;
         this.EnergyA = EnergyA;
         this.DeltaR = DeltaR;
         this.DeltaA = DeltaA;
+        this.metric = metric;
 
     }
 
     // List of parameters will be written here:
     public double computeEnergy(Particle A, Particle B) {
         double s = A.retrieveR() + B.retrieveR();
-        double d = distance(A, B);
+        double d = metric.distance(A, B);
         return computeEnergyR(s, d);
     }
 
@@ -58,13 +62,6 @@ public class SimpleSimulation {
         // To be implemented later. 
 
         return 0;
-    }
-
-    public double distance(Particle A, Particle B) {
-        double dx = Math.abs(A.retrieveX() - B.retrieveX());
-        double dy = Math.abs(A.retrieveY() - B.retrieveY());
-        double answer = Math.sqrt(dx * dx + dy * dy);
-        return answer;
     }
 
     public double returnEnergyR() {

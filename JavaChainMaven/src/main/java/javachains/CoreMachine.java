@@ -17,11 +17,9 @@ public class CoreMachine {
 
     private Random random;
 
-    public CoreMachine() {
-        this.random = new Random();
-
+    public CoreMachine(Random r) {
+        this.random = r;
     }
-
     public XYSeriesCollection GenerateData(int n, SimpleSimulation simulation, double s) {
         XYSeriesCollection dataset = new XYSeriesCollection();
         XYSeries data = new XYSeries("the function");
