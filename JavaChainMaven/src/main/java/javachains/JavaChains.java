@@ -6,31 +6,36 @@
 package javachains;
 
 import graphicss.FrameXY;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
 import metrics.EuclideanMetric;
 import metrics.Metric;
 import metrics.TorusMetric;
+import org.jfree.data.xy.XYDataItem;
+import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
 import testpackage.XYLineChart_AWT;
 
-/**
- *
- * @author John
- */
 public class JavaChains {
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         // bugfixingmethod();
         //  functionvaluetest();
         //  functionPlotTest();
         //   valuePowTest();
         Metric m = new EuclideanMetric();
-        distanceTest();
+    //    distanceTest();
+        //    classHierArchyTest();
+//        someExperement();
+        //   tryingToAccessPrivateField();
+        //   TestingAnotherThing();
+        testingTest();
+
     }
 
     public static void functionvaluetest(Metric m) {
@@ -71,11 +76,45 @@ public class JavaChains {
         System.out.println(Math.pow(10, -6));
     }
 
-    public static void distanceTest() {
+    public static void distanceTest() throws NoSuchFieldException {
         TorusMetric metric = new TorusMetric(0.0, 0.0, 1.0, 1.0);
         Particle A = new Particle(0.05, 0.1, 0.1);
         Particle B = new Particle(0.05, 0.9, 0.9);
         System.out.println(metric.distance(A, B));
+    }
+
+    public static void classHierArchyTest() throws NoSuchFieldException {
+        XYSeries s = new XYSeries("lol");
+        Particle p = new Particle(1, 2, 3);
+        s.add(p);
+        Particle q = (Particle) s.getDataItem(0);
+        System.out.println(q.retrieveR());
+    }
+
+    public static void someExperement() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        Particle p = new Particle(3, 3, 3);
+        p.forceChangeX(4);
+    }
+
+    public static void tryingToAccessPrivateField() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        XYDataItem b = new XYDataItem(3, 3);
+        Field f = b.getClass().getDeclaredField("x");
+        f.setAccessible(true);
+        f.set(b, 2.0);
+        System.out.println(b.getX());
+
+    }
+
+    public static void TestingAnotherThing() throws NoSuchFieldException {
+        Particle p = new Particle(1, 2, 3);
+        p.TestInsideClass();
+
+    }
+
+    public static void testingTest() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        Particle p = new Particle(3, 3, 3);
+        p.forceChangeX(2);
+        System.out.println(p.getX());
     }
 
     //Dataset creator will be done here:

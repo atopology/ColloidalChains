@@ -7,10 +7,7 @@ package metrics;
 
 import javachains.Particle;
 
-/**
- *
- * @author Serafim
- */
+
 public class TorusMetric extends EuclideanMetric implements Metric {
 
     private double x0;
@@ -28,10 +25,10 @@ public class TorusMetric extends EuclideanMetric implements Metric {
     @Override
     public double distance(Particle A, Particle B) {
         double epsilon = Math.pow(10, -6);
-        double xA = A.retrieveX();
-        double xB = B.retrieveX();
-        double yA = A.retrieveY();
-        double yB = B.retrieveY();
+        double xA = A.getXValue();
+        double xB = B.getXValue();
+        double yA = A.getYValue();
+        double yB = B.getYValue();
         double smallest = Double.MAX_VALUE;
         double dx = Math.abs(x1 - x0);
         double dy = Math.abs(y1 - y0);

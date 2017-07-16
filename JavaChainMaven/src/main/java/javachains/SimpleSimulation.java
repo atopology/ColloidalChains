@@ -7,10 +7,7 @@ package javachains;
 
 import metrics.Metric;
 
-/**
- *
- * @author John
- */
+
 public class SimpleSimulation {
 
     // Assumpsions on varriables:

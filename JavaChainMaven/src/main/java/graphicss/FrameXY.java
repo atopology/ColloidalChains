@@ -16,10 +16,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
 
-/**
- *
- * @author Serafim
- */
+
 public class FrameXY extends ApplicationFrame {
 
     public FrameXY(String title, String chartTitle, XYSeriesCollection dataset) {

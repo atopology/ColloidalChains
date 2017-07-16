@@ -7,10 +7,7 @@ package metrics;
 
 import javachains.Particle;
 
-/**
- *
- * @author Serafim
- */
+
 public class EuclideanMetric implements Metric {
 
     public double euclideanDistance(double xA, double yA, double xB, double yB) {
@@ -22,7 +19,7 @@ public class EuclideanMetric implements Metric {
 
     @Override
     public double distance(Particle A, Particle B) {
-        return euclideanDistance(A.retrieveX(), A.retrieveY(), B.retrieveX(), B.retrieveY());
+        return euclideanDistance(A.getXValue(), A.getYValue(), B.getXValue(), B.getYValue());
     }
 
 }

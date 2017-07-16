@@ -5,43 +5,52 @@
  */
 package javachains;
 
+import java.lang.reflect.Field;
+import org.jfree.data.xy.XYDataItem;
+
 /**
  *
- * @author John
+ * This class will most likely not be used
  */
-public class Particle {
+public class Particle extends XYDataItem {
 
     private double radius;
-    private double x;
-    private double y;
+    private Field f;
 
-    public Particle(double radius, double x, double y) {
-        this.radius = radius;
-        this.x = x;
-        this.y = y;
+    public Particle(Number x, Number y) {
+        super(x, y);
+
     }
 
-    public void setX(double x) {
-        this.x = x;
-    }
-
-    public void setY(double y) {
-        this.y = y;
+    public Particle(double x, double y, double r) throws NoSuchFieldException {
+        super(x, y);
+        this.radius = r;
+        this.f = this.getClass().getSuperclass().getDeclaredField("x");
+        this.f.setAccessible(true);
     }
     
-    public double retrieveX()
-    {
-    return this.x;
-    }
-    public double retrieveY()
-    {
-    return this.y;
-    }
-    
-    public double retrieveR()
-    {
-    return this.radius;
+
+    public double retrieveR() {
+        return this.radius;
     }
 
+    public void TestInsideClass() {
+        System.out.println(this.getClass());
+        System.out.println(super.getClass());
+        XYDataItem item = new XYDataItem(7, 7);
+        System.out.println(item.getClass());
+        System.out.println(this.getClass().getSuperclass());
+    }
+
+    // Because of this special feature in the libary:
     
+    // * Sets the y-value for this data item.  Note that there is no
+   //* corresponding method to change the x-value.
+
+    // I had to create getaround like this:
+    public void forceChangeX(double xa) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        this.f.set(this, xa);
+
+    }
+
 }

@@ -7,12 +7,10 @@ package metrics;
 
 import javachains.Particle;
 
-/**
- *
- * @author Serafim
- */
+
 public interface Metric {
 
     public double distance(Particle A, Particle B);
+    
 
 }
