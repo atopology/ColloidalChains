@@ -124,11 +124,14 @@ public class JavaChains {
         double x = 100.0;
         double y = 100.0;
         double r = 1.0;
-        int n = 1000;
+        int n = 1500;
         Metric m = new TorusMetric(0,0,x,y);
+        SimpleSimulation simulation = new SimpleSimulation(10.0, -4.0, 6.0, 5.0, m);
         CoreMachine dataGenerator = new CoreMachine(new Random());
         XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(n, r, x, y,m);
-        DotPlot plotplot = new DotPlot("Particle in box", r, data);
+        Box box = (Box) data.getSeries().get(0);
+        double energysum = simulation.computeSumOfPotentials(box);
+        DotPlot plotplot = new DotPlot("Sum of energies: " + energysum, r, data);
         plotplot.pack();
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);

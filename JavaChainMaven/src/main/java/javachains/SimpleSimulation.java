@@ -7,7 +7,6 @@ package javachains;
 
 import metrics.Metric;
 
-
 public class SimpleSimulation {
 
     // Assumpsions on varriables:
@@ -38,7 +37,6 @@ public class SimpleSimulation {
     public double computeEnergyR(double s, double d) {
 
         // This is going to be piecewise linear function depending on some parameters 
-        
         if (d < s) {
             return Double.NEGATIVE_INFINITY;
         } else if (d < s + this.DeltaA) {
@@ -55,10 +53,30 @@ public class SimpleSimulation {
         // test comment
     }
 
-    public double computeProbability() {
-        // To be implemented later. 
+    public double computeSumOfPotentials(Box box) {
+        double sum = 0;
+        for (Object o1 : box.getItems()) {
+            for (Object o2 : box.getItems()) {
+                if (!o1.equals(o2)) {
+                    Particle p1 = (Particle) o1;
+                    Particle p2 = (Particle) o2;
+                    double pr = computeEnergy(p1, p2);
+                    if (pr == Double.NEGATIVE_INFINITY) {
+                        return Double.NEGATIVE_INFINITY;
+                    } else {
+                        sum = sum + pr;
+                    }
+                }
+            }
 
-        return 0;
+        }
+        return sum;
+    }
+
+    public double computeProbability(double EAttempt, double ECurrent) {
+        double delta = EAttempt - ECurrent;
+        double result = Math.pow(Math.E, delta);
+        return result;
     }
 
     public double returnEnergyR() {
