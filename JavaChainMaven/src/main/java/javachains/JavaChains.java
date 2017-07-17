@@ -5,6 +5,7 @@
  */
 package javachains;
 
+import graphicss.DotPlot;
 import graphicss.FrameXY;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -28,13 +29,14 @@ public class JavaChains {
         //  functionvaluetest();
         //  functionPlotTest();
         //   valuePowTest();
-        Metric m = new EuclideanMetric();
-    //    distanceTest();
+        
+        //    distanceTest();
         //    classHierArchyTest();
 //        someExperement();
         //   tryingToAccessPrivateField();
         //   TestingAnotherThing();
-        testingTest();
+        //     testingTest();
+        launchDotPlot();
 
     }
 
@@ -115,6 +117,22 @@ public class JavaChains {
         Particle p = new Particle(3, 3, 3);
         p.forceChangeX(2);
         System.out.println(p.getX());
+    }
+
+    public static void launchDotPlot() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        // we define length:
+        double x = 100.0;
+        double y = 100.0;
+        double r = 1.0;
+        int n = 1000;
+        Metric m = new TorusMetric(0,0,x,y);
+        CoreMachine dataGenerator = new CoreMachine(new Random());
+        XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(n, r, x, y,m);
+        DotPlot plotplot = new DotPlot("Particle in box", r, data);
+        plotplot.pack();
+        RefineryUtilities.centerFrameOnScreen(plotplot);
+        plotplot.setVisible(true);
+
     }
 
     //Dataset creator will be done here:

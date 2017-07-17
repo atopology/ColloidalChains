@@ -26,17 +26,19 @@ import org.jfree.ui.RefineryUtilities;
 import org.jfree.util.ShapeUtilities;
 
 public class SPlotfinal extends ApplicationFrame {
-    
+
+
     public SPlotfinal(String s) {
         super(s);
         JPanel jpanel = createDemoPanel();
-    //    jpanel.setLayout(null);
+        //    jpanel.setLayout(null);
         jpanel.setPreferredSize(new Dimension(500, 270));
         setContentPane(jpanel);
-    }
-    
-    public static JPanel createDemoPanel() {
         
+    }
+
+    public static JPanel createDemoPanel() {
+
         JFreeChart jfreechart = ChartFactory.createScatterPlot("Scatter Plot Demo",
                 "X", "Y", samplexydataset3(), PlotOrientation.VERTICAL, true, true, false);
         //      Shape cross = ShapeUtilities.createDiagonalCross(3, 1);
@@ -69,12 +71,12 @@ public class SPlotfinal extends ApplicationFrame {
         plot.setRangeCrosshairVisible(true);
         return new ChartPanel(jfreechart);
     }
-    
+
     private static XYDataset samplexydataset2() {
         int cols = 20;
         int rows = 20;
         double[][] values = new double[cols][rows];
-        
+
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         XYSeries series = new XYSeries(1);
         Random rand = new Random();
@@ -82,28 +84,28 @@ public class SPlotfinal extends ApplicationFrame {
             for (int j = 0; j < values[i].length; j++) {
                 double x = Math.round(rand.nextDouble() * 500);
                 double y = Math.round(rand.nextDouble() * 500);
-                
+
                 series.add(x, y);
             }
         }
         xySeriesCollection.addSeries(series);
-        
+
         return xySeriesCollection;
     }
-    
+
     private static XYDataset samplexydataset3() {
         int cols = 20;
         int rows = 20;
         double[][] values = new double[cols][rows];
-        
+
         XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
         XYSeries series = new XYSeries("Random");
         series.add(0.1, 0.1);
         xySeriesCollection.addSeries(series);
-        
+
         return xySeriesCollection;
     }
-    
+
     public static void main(String args[]) {
         SPlotfinal scatterplotdemo4 = new SPlotfinal("Scatter Plot Demo 4");
         scatterplotdemo4.pack();
