@@ -5,8 +5,10 @@
  */
 package javachains;
 
+import UserInterface.BasicUi;
 import graphicss.DotPlot;
 import graphicss.FrameXY;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
@@ -24,20 +26,21 @@ public class JavaChains {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public static void main(String[] args) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
         // bugfixingmethod();
         //  functionvaluetest();
         //  functionPlotTest();
         //   valuePowTest();
-        
+
         //    distanceTest();
         //    classHierArchyTest();
 //        someExperement();
         //   tryingToAccessPrivateField();
         //   TestingAnotherThing();
         //     testingTest();
-        launchDotPlot();
-
+        //   launchDotPlot();
+        //     ActualParametersTest();
+        interfaceTesting();
     }
 
     public static void functionvaluetest(Metric m) {
@@ -125,17 +128,51 @@ public class JavaChains {
         double y = 100.0;
         double r = 1.0;
         int n = 1500;
-        Metric m = new TorusMetric(0,0,x,y);
+        Metric m = new TorusMetric(0, 0, x, y);
         SimpleSimulation simulation = new SimpleSimulation(10.0, -4.0, 6.0, 5.0, m);
         CoreMachine dataGenerator = new CoreMachine(new Random());
-        XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(n, r, x, y,m);
-        Box box = (Box) data.getSeries().get(0);
+        XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(n, r, x, y, m);
+        State box = (State) data.getSeries().get(0);
         double energysum = simulation.computeSumOfPotentials(box);
         DotPlot plotplot = new DotPlot("Sum of energies: " + energysum, r, data);
         plotplot.pack();
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);
 
+    }
+
+    public static void ActualParametersTest() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        double x = 1.0;
+        double y = 1.0;
+        double fraction = 0.5;
+        double energyR = 3.75;
+        double deltaR = 0.5;
+        double energyA = -7;
+        int N = 1000;
+        double r = computeRusingFraction(fraction, x * y, N);
+        double deltaA = 0.05 * r;
+        Metric m = new TorusMetric(0, 0, x, y);
+        SimpleSimulation simulation = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
+        CoreMachine dataGenerator = new CoreMachine(new Random());
+        XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(N, r, x, y, m);
+        State box = (State) data.getSeries().get(0);
+        double energysum = simulation.computeSumOfPotentials(box);
+        DotPlot plotplot = new DotPlot("Sum of energies: " + energysum, r, data);
+        plotplot.pack();
+        RefineryUtilities.centerFrameOnScreen(plotplot);
+        plotplot.setVisible(true);
+        System.out.println("program succefully closed");
+
+    }
+
+    public static double computeRusingFraction(double fraction, double area, int N) {
+        double result = Math.sqrt((fraction * area) / (Math.PI * N));
+        return result;
+    }
+
+    public static void interfaceTesting() throws IOException {
+        BasicUi ui = new BasicUi(null);
+        ui.run();
     }
 
     //Dataset creator will be done here:

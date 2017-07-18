@@ -53,7 +53,7 @@ public class SimpleSimulation {
         // test comment
     }
 
-    public double computeSumOfPotentials(Box box) {
+    public double computeSumOfPotentials(State box) {
         double sum = 0;
         for (Object o1 : box.getItems()) {
             for (Object o2 : box.getItems()) {
@@ -78,6 +78,9 @@ public class SimpleSimulation {
         double result = Math.pow(Math.E, delta);
         return result;
     }
+
+    // In this method we assume that all the particles have same radius
+ 
 
     public double returnEnergyR() {
         return this.EnergyR;

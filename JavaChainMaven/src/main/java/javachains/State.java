@@ -10,21 +10,23 @@ import metrics.Metric;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 
-public class Box extends XYSeries {
-    
+public class State extends XYSeries {
+
     private Metric metric;
-    
-    public Box(Comparable key) {
+    private double potential;
+
+    public State(Comparable key) {
         super(key);
+        this.potential = 0;
     }
-    
-    public Box(Comparable key, Metric metric) {
+
+    public State(Comparable key, Metric metric) {
         super(key);
         this.metric = metric;
     }
-    
+
     public boolean isPossibleToAddParticle(Particle q) {
-        
+
         for (Object qt : super.getItems()) {
             Particle p = (Particle) qt;
             if (p.retrieveR() + q.retrieveR() >= metric.distance(p, q)) {
@@ -55,5 +57,13 @@ public class Box extends XYSeries {
             return true;
         }
         return false;
+    }
+
+    public void setPotential(double p) {
+        this.potential = p;
+    }
+
+    public double returnPotential() {
+        return this.potential;
     }
 }

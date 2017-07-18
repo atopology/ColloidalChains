@@ -34,7 +34,7 @@ public class CoreMachine {
     
     public XYSeriesCollection GenerateParticlesInBox(int n, double r, double x, double y, Metric m) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         XYSeriesCollection dataset = new XYSeriesCollection();
-        Box data = new Box("the data",m);
+        State data = new State("the data",m);
         
         for (int i = 0; i < n; i++) {
             double tx = this.random.nextDouble() * x;
