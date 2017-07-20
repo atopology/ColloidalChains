@@ -27,8 +27,11 @@ public class History {
     }
 
     public ArrayList<State> returnHistory() {
-
         return this.boxStates;
+    }
+
+    public void reset() {
+        this.boxStates.clear();
     }
 
 }

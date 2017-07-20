@@ -10,24 +10,19 @@ import metrics.Metric;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class CoreRun {
-
+    
+    private Random random;
     private double xlength;
     private double ylength;
-    private double deltaA;
-    private double energyR;
-    private double deltaR;
-    private double energyA;
     private int N;
-    private Random random;
     private Metric m;
     private double r;
     private double dx;
     private double dy;
-
     private SimpleSimulation simulator;
     private State ourBox;
     private History history;
-
+    
     public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy) {
         this.simulator = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
         this.xlength = x;
@@ -37,12 +32,78 @@ public class CoreRun {
         this.r = r;
         this.dx = dx;
         this.dy = dy;
-
+        
     }
-
+    
+    public CoreRun() {
+        this.simulator = new SimpleSimulation();
+        this.history = new History();
+        
+    }
+    
+    public boolean ableToRun() {
+        return (this.xlength != 0) && (this.ylength != 0) && (this.r != 0) && (this.dx != 0) && (this.dy != 0) && (simulator.readyToCompute());
+        
+    }
+    
+    public void setR(double r) {
+        this.r = r;
+    }
+    
+    public double returnR() {
+        return this.r;
+    }
+    
+    public void setN(int N) {
+        this.N = N;
+    }
+    
+    public double returnN() {
+        return this.N;
+    }
+    
+    public void setX(double x) {
+        this.xlength = x;
+    }
+    
+    public double returnX() {
+        return this.xlength;
+    }
+    
+    public double returnY() {
+        return this.ylength;
+    }
+    
+    public void setY(double y) {
+        this.ylength = y;
+    }
+    
+    public void setMetric(Metric m) {
+        this.m = m;
+        if (this.simulator != null) {
+            this.simulator.setMetric(m);
+        }
+    }
+    
+    public void setDx(double dx) {
+        this.dx = dx;
+    }
+    
+    public double returnDx() {
+        return this.dx;
+    }
+    
+    public double returnDy() {
+        return this.dy;
+    }
+    
+    public void setDy(double dy) {
+        this.dy = dy;
+    }
+    
     public void GenerateParticlesInBox(int n, double r, double x, double y, Metric m) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         State data = new State("the data", m);
-
+        
         for (int i = 0; i < n; i++) {
             double tx = this.random.nextDouble() * x;
             double ty = this.random.nextDouble() * y;
@@ -55,7 +116,7 @@ public class CoreRun {
             }
         }
         this.ourBox = data;
-
+        
     }
     // Attempted moves are done here in "square". 
     // Here we need to be careful, because we want each movement to stay in the box
@@ -91,9 +152,9 @@ public class CoreRun {
         } else {
             return x;
         }
-
+        
     }
-
+    
     public boolean iterate(double oldpotential, double newpotential) {
         double probability = this.simulator.computeProbability(newpotential, oldpotential);
         double g = this.random.nextDouble();
@@ -115,11 +176,20 @@ public class CoreRun {
             this.history.add(q);
             this.ourBox = q;
         }
-
+        
     }
-
+    
     public History returnHistory() {
         return this.history;
     }
-
+    
+    public SimpleSimulation returnSimulator() {
+        return this.simulator;
+    }
+    
+    public void reset()
+    {
+    this.history.reset();
+    }
+    
 }

@@ -27,6 +27,10 @@ public class SimpleSimulation {
 
     }
 
+    public SimpleSimulation() {
+
+    }
+
     // List of parameters will be written here:
     public double computeEnergy(Particle A, Particle B) {
         double s = A.retrieveR() + B.retrieveR();
@@ -75,13 +79,11 @@ public class SimpleSimulation {
 
     public double computeProbability(double EAttempt, double ECurrent) {
         double delta = EAttempt - ECurrent;
-        double result = Math.pow(Math.E, delta);
+        double result = Math.pow(Math.E, -delta);
         return result;
     }
 
     // In this method we assume that all the particles have same radius
- 
-
     public double returnEnergyR() {
         return this.EnergyR;
 
@@ -100,6 +102,31 @@ public class SimpleSimulation {
     public double returnDeltaA() {
         return this.DeltaA;
 
+    }
+
+    public void setEnergyR(double s) {
+        this.EnergyR = s;
+    }
+
+    public void setEnergyA(double s) {
+        this.EnergyR = s;
+    }
+
+    public void setDeltaR(double s) {
+        this.EnergyR = s;
+    }
+
+    public void setDeltaA(double s) {
+        this.EnergyR = s;
+    }
+    
+    public void setMetric(Metric m)
+    {
+    this.metric = m;
+    }
+
+    public boolean readyToCompute() {
+        return (this.DeltaA != 0) && (this.DeltaR != 0) && (this.EnergyR != 0) && (this.EnergyA != 0);
     }
 
 }

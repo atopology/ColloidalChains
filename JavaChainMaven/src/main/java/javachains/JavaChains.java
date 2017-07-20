@@ -6,6 +6,7 @@
 package javachains;
 
 import UserInterface.BasicUi;
+import UserInterface.CompicatedUI;
 import graphicss.DotPlot;
 import graphicss.FrameXY;
 import java.io.IOException;
@@ -40,7 +41,8 @@ public class JavaChains {
         //     testingTest();
         //   launchDotPlot();
         //     ActualParametersTest();
-        interfaceTesting();
+        //   interfaceTesting();
+        simpleInterfaceTesting();
     }
 
     public static void functionvaluetest(Metric m) {
@@ -134,7 +136,7 @@ public class JavaChains {
         XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(n, r, x, y, m);
         State box = (State) data.getSeries().get(0);
         double energysum = simulation.computeSumOfPotentials(box);
-        DotPlot plotplot = new DotPlot("Sum of energies: " + energysum, r, data);
+        DotPlot plotplot = new DotPlot("this is title", "Sum of energies: " + energysum, r, data);
         plotplot.pack();
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);
@@ -157,7 +159,7 @@ public class JavaChains {
         XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(N, r, x, y, m);
         State box = (State) data.getSeries().get(0);
         double energysum = simulation.computeSumOfPotentials(box);
-        DotPlot plotplot = new DotPlot("Sum of energies: " + energysum, r, data);
+        DotPlot plotplot = new DotPlot("This is title", "Total potential: " + energysum, r, data);
         plotplot.pack();
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);
@@ -171,8 +173,14 @@ public class JavaChains {
     }
 
     public static void interfaceTesting() throws IOException {
-        BasicUi ui = new BasicUi(null);
+        CompicatedUI ui = new CompicatedUI(null);
         ui.run();
+    }
+
+    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        BasicUi ui = new BasicUi();
+        ui.run();
+
     }
 
     //Dataset creator will be done here:

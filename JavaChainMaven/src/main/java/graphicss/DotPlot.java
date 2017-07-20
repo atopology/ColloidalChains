@@ -27,19 +27,20 @@ public class DotPlot extends ApplicationFrame {
 
     private double fixedR;
     private double scalingfactor;
+ 
 
-    public DotPlot(String title, double radius, XYDataset dataset) {
+    public DotPlot(String title, String subtitle, double radius, XYDataset dataset) {
         super(title);
         this.fixedR = radius;
-        JPanel panel = creatPanel(dataset);
+        JPanel panel = creatPanel(dataset, subtitle);
         panel.setPreferredSize(new Dimension(560, 367));
         setContentPane(panel);
         this.scalingfactor = 1.0;
     }
 
-    public JPanel creatPanel(XYDataset dataset) {
+    public JPanel creatPanel(XYDataset dataset, String subtitle) {
 
-        JFreeChart jfreechart = ChartFactory.createScatterPlot("Particles in box",
+        JFreeChart jfreechart = ChartFactory.createScatterPlot(subtitle,
                 "X", "Y", dataset, PlotOrientation.VERTICAL, true, true, false);
         //      Shape cross = ShapeUtilities.createDiagonalCross(3, 1);
 
