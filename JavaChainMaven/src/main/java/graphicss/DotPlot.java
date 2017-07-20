@@ -27,7 +27,6 @@ public class DotPlot extends ApplicationFrame {
 
     private double fixedR;
     private double scalingfactor;
- 
 
     public DotPlot(String title, String subtitle, double radius, XYDataset dataset) {
         super(title);
@@ -36,6 +35,7 @@ public class DotPlot extends ApplicationFrame {
         panel.setPreferredSize(new Dimension(560, 367));
         setContentPane(panel);
         this.scalingfactor = 1.0;
+        this.setDefaultCloseOperation(HIDE_ON_CLOSE);
     }
 
     public JPanel creatPanel(XYDataset dataset, String subtitle) {
@@ -46,7 +46,10 @@ public class DotPlot extends ApplicationFrame {
 
         XYPlot plot = (XYPlot) jfreechart.getPlot();
         XYItemRenderer renderer = plot.getRenderer();
-        renderer.setSeriesShape(0, new Ellipse2D.Double(0.0, 0.0, this.fixedR * this.scalingfactor, this.fixedR * scalingfactor));
+        renderer.setSeriesShape(0, new Ellipse2D.Double(0.0, 0.0, 1.0, 1.0));
+    // Remember to uncomment this lateR:  
+        //   renderer.setSeriesShape(0, new Ellipse2D.Double(0.0, 0.0, this.fixedR * this.scalingfactor, this.fixedR * scalingfactor));
+
 //        xyPlot.setRenderer(new XYLineAndShapeRenderer(false, true){
 //
 //        @Override

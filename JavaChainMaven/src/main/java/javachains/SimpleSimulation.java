@@ -109,20 +109,19 @@ public class SimpleSimulation {
     }
 
     public void setEnergyA(double s) {
-        this.EnergyR = s;
+        this.EnergyA = s;
     }
 
     public void setDeltaR(double s) {
-        this.EnergyR = s;
+        this.DeltaR = s;
     }
 
     public void setDeltaA(double s) {
-        this.EnergyR = s;
+        this.DeltaA = s;
     }
-    
-    public void setMetric(Metric m)
-    {
-    this.metric = m;
+
+    public void setMetric(Metric m) {
+        this.metric = m;
     }
 
     public boolean readyToCompute() {
