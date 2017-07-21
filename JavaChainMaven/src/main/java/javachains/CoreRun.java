@@ -158,10 +158,38 @@ public class CoreRun {
         System.out.println("Box generating ended");
         return newbox;
     }
-    
-    public State genNewBoxAlternative(double dx, double dy)
-    {
-    return null;
+
+    public State genNewBoxAlternative(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        State newbox = new State("key", this.m);
+        while (!tryGenNewBox(newbox, dx, dy)) {
+            System.out.println("Trying new combination");
+            newbox = new State("key", this.m);
+
+        }
+        return newbox;
+    }
+
+    public boolean tryGenNewBox(State q, double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+
+        State newbox = q;
+        int debugcounter = 0;
+        for (Object o : this.ourBox.getItems()) {
+            Particle p = (Particle) o;
+            double xt = p.getXValue();
+            double yt = p.getYValue();
+            double pdx = -dx + this.random.nextDouble() * 2 * dx;
+            double pdy = -dy + this.random.nextDouble() * 2 * dy;
+            Particle np = new Particle(coordinatefix(xt + pdx, this.xlength), coordinatefix(yt + pdy, this.ylength), p.retrieveR());
+
+            if (!newbox.addParticle(np)) {
+                System.out.println("Failed at: " + debugcounter);
+                return false;
+
+            }
+            debugcounter++;
+        }
+        return true;
+
     }
 
     //

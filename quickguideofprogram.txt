@@ -1,0 +1,19 @@
+Quick documentation:
+
+Before doing anything else:
+
+- Setup: Will ask you for all kinds of parameters.
+- Loaddefault: Will load some parameters (good for quick testing)
+
+After:
+
+- Calculate n (will calculate simulation of n steps)
+
+And after this:
+
+- Plot n, will plot particles and show their potential as step n (This is kinda history from 
+
+Known bugs:
+- When closing one of the plot windows, the whole program will exit.
+- Size of the circles in the plot is not changable
+- Calculation might never end (In case one of the particles gets too close to other it might take some time for it to generate correct values, probably it will accept only x , y close to 0)
