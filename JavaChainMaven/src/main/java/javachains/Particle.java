@@ -12,7 +12,7 @@ import org.jfree.data.xy.XYDataItem;
  *
  * This class will most likely not be used
  */
-public class Particle extends XYDataItem {
+public class Particle extends XYDataItem implements Cloneable {
 
     private double radius;
     private Field f;
@@ -28,7 +28,6 @@ public class Particle extends XYDataItem {
         this.f = this.getClass().getSuperclass().getDeclaredField("x");
         this.f.setAccessible(true);
     }
-    
 
     public double retrieveR() {
         return this.radius;
@@ -43,14 +42,20 @@ public class Particle extends XYDataItem {
     }
 
     // Because of this special feature in the libary:
-    
     // * Sets the y-value for this data item.  Note that there is no
-   //* corresponding method to change the x-value.
-
+    //* corresponding method to change the x-value.
     // I had to create getaround like this:
     public void forceChangeX(double xa) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         this.f.set(this, xa);
+    }
 
+    public Particle clond() throws NoSuchFieldException {
+        Particle p = new Particle(super.getXValue(), super.getYValue(), this.radius);
+        return p;
+    }
+
+    public boolean equalz(Particle other) {
+        return (this.getX() == other.getX()) && (this.getY() == other.getY()) && (this.radius == this.retrieveR());
     }
 
 }

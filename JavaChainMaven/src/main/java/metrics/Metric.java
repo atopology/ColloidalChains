@@ -11,6 +11,6 @@ import javachains.Particle;
 public interface Metric {
 
     public double distance(Particle A, Particle B);
-    
+    public void move(Particle A, double dx, double dy);
 
 }

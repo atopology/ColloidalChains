@@ -6,6 +6,7 @@
 package UserInterface;
 
 import graphicss.DotPlot;
+import java.util.Random;
 import java.util.Scanner;
 import javachains.Calculator;
 import javachains.CoreRun;
@@ -16,6 +17,7 @@ import metrics.TorusMetric;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
+import pixelapproximation.FillerLogic;
 
 /**
  *
@@ -25,14 +27,15 @@ public class BasicUi {
 
     private CoreRun runningThing;
     private Scanner scan;
+    private int ApproxDepth;
 
     public BasicUi() {
-
+        this.ApproxDepth = 6;
         this.runningThing = new CoreRun();
         this.scan = new Scanner(System.in);
     }
 
-    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
         System.out.println("Welcome to BasicUI of this program!");
 
         boolean stillRun = true;
@@ -117,7 +120,7 @@ public class BasicUi {
                     plotplot.setVisible(true);
                 }
             } else if (k.equals("exit")) {
-                return;
+                System.exit(0);
             } else if (k.equals("setscaling")) {
                 System.out.print("scale:");
                 String qav = this.scan.next();
@@ -150,7 +153,6 @@ public class BasicUi {
     private void parametrize(double dxa, double dxb, double dya, double dyb, int N, double fraction, double xlength, double ylength, double DeltaAa, double DeltaAb, double EnergyAa, double EnergyAb, double DeltaRa, double DeltaRb, double EnergyR) {
         // adding parameters
         double radius = Calculator.computeRusingFraction(fraction, xlength * ylength, N);
-
         this.runningThing.setDx(Calculator.linearfunction(dxa, dxb, radius));
         this.runningThing.setDy(Calculator.linearfunction(dya, dyb, radius));
         this.runningThing.setN(N);
@@ -159,6 +161,9 @@ public class BasicUi {
         this.runningThing.setY(ylength);
         Metric m = new TorusMetric(0.0, 0.0, xlength, ylength);
         this.runningThing.setMetric(m);
+        Random r = new Random();
+        this.runningThing.setRandom(r);
+        this.runningThing.setApproximator(new FillerLogic(this.ApproxDepth, r, m));
         SimpleSimulation s = this.runningThing.returnSimulator();
         s.setDeltaA(Calculator.linearfunction(DeltaAa, DeltaAb, radius));
         s.setEnergyA(Calculator.linearfunction(EnergyAa, EnergyAb, radius));

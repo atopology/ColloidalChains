@@ -8,6 +8,7 @@ package graphicss;
 import java.awt.Dimension;
 import java.awt.Shape;
 import java.awt.geom.Ellipse2D;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -23,7 +24,7 @@ import org.jfree.util.ShapeUtilities;
  *
  * @author Serafim
  */
-public class DotPlot extends ApplicationFrame {
+public class DotPlot extends JFrame {
 
     private double fixedR;
     private double scalingfactor;

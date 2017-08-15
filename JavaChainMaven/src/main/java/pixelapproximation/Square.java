@@ -5,6 +5,7 @@
  */
 package pixelapproximation;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import javachains.Particle;
 
@@ -14,6 +15,7 @@ import javachains.Particle;
  */
 public class Square {
 
+    private HashSet<Particle> problematiclist;
     private double x0;
     private double x1;
     private double y0;
@@ -30,7 +32,12 @@ public class Square {
         this.x1 = x1;
         this.y1 = y1;
         this.depth = depth;
+        this.problematiclist = new HashSet<Particle>();
 
+    }
+
+    public HashSet<Particle> returnProblematicList() {
+        return this.problematiclist;
     }
 
     public void InitWalls() {
@@ -51,7 +58,7 @@ public class Square {
     }
 
     public void setEast(Wall k) {
-        this.wallsouth = k;
+        this.walleast = k;
     }
 
     public void setWest(Wall k) {
@@ -83,7 +90,7 @@ public class Square {
     }
 
     public boolean doesIntersectSomeone() {
-        return (this.wallnorth.returnList().isEmpty()) && (this.wallsouth.returnList().isEmpty()) && (this.walleast.returnList().isEmpty()) && (this.wallwest.returnList().isEmpty());
+        return !((this.wallnorth.returnList().isEmpty()) && (this.wallsouth.returnList().isEmpty()) && (this.walleast.returnList().isEmpty()) && (this.wallwest.returnList().isEmpty()));
     }
 
     public double returnx0() {
@@ -102,5 +109,4 @@ public class Square {
         return this.y1;
     }
 
-   
 }

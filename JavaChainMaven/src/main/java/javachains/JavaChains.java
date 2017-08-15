@@ -27,7 +27,7 @@ public class JavaChains {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException {
+    public static void main(String[] args) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException, CloneNotSupportedException {
         // bugfixingmethod();
         //  functionvaluetest();
         //  functionPlotTest();
@@ -50,7 +50,6 @@ public class JavaChains {
         double s = 2.0;
         Random random = new Random();
         SimpleSimulation simulation = new SimpleSimulation(10.0, -4.0, 10.0, 2.0, m);
-
         for (int i = 0; i < 10; i++) {
             double ra = 2 + random.nextDouble() * 10;
             double result = simulation.computeEnergyR(s, ra);
@@ -109,13 +108,11 @@ public class JavaChains {
         f.setAccessible(true);
         f.set(b, 2.0);
         System.out.println(b.getX());
-
     }
 
     public static void TestingAnotherThing() throws NoSuchFieldException {
         Particle p = new Particle(1, 2, 3);
         p.TestInsideClass();
-
     }
 
     public static void testingTest() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
@@ -140,7 +137,6 @@ public class JavaChains {
         plotplot.pack();
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);
-
     }
 
     public static void ActualParametersTest() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
@@ -164,7 +160,6 @@ public class JavaChains {
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);
         System.out.println("program succefully closed");
-
     }
 
     public static double computeRusingFraction(double fraction, double area, int N) {
@@ -177,10 +172,9 @@ public class JavaChains {
         ui.run();
     }
 
-    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
         BasicUi ui = new BasicUi();
         ui.run();
-
     }
     
     public static void TestCircleApproximation()
@@ -189,6 +183,8 @@ public class JavaChains {
     
     
     }
+    
+ 
 
     //Dataset creator will be done here:
 }

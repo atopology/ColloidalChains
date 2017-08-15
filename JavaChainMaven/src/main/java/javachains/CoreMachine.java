@@ -30,8 +30,8 @@ public class CoreMachine {
         }
         dataset.addSeries(data);
         return dataset;
-    }
-    
+    } 
+   
     public XYSeriesCollection GenerateParticlesInBox(int n, double r, double x, double y, Metric m) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         XYSeriesCollection dataset = new XYSeriesCollection();
         State data = new State("the data",m);

@@ -22,4 +22,9 @@ public class EuclideanMetric implements Metric {
         return euclideanDistance(A.getXValue(), A.getYValue(), B.getXValue(), B.getYValue());
     }
 
+    @Override
+    public void move(Particle A, double dx, double dy) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
 }

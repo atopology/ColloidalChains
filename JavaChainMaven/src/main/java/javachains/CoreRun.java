@@ -8,6 +8,7 @@ package javachains;
 import java.util.Random;
 import metrics.Metric;
 import org.jfree.data.xy.XYSeriesCollection;
+import pixelapproximation.FillerLogic;
 
 public class CoreRun {
 
@@ -23,9 +24,11 @@ public class CoreRun {
     private State ourBox;
     private History history;
     private double scalingfactor;
+    private FillerLogic approximator;
 
-    public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy) {
+    public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy, int approxdepth) {
         this.simulator = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
+        this.approximator = new FillerLogic(approxdepth, random, m);
         this.xlength = x;
         this.ylength = y;
         this.history = new History();
@@ -40,9 +43,16 @@ public class CoreRun {
     public CoreRun() {
         this.simulator = new SimpleSimulation();
         this.history = new History();
-        this.random = new Random();
         this.scalingfactor = 1.0;
 
+    }
+
+    public void setRandom(Random r) {
+        this.random = r;
+    }
+
+    public void setApproximator(FillerLogic approximator) {
+        this.approximator = approximator;
     }
 
     public boolean ableToRun() {
@@ -131,6 +141,15 @@ public class CoreRun {
     // Attempted moves are done here in "square". 
     // Here we need to be careful, because we want each movement to stay in the box
 
+    public State genNewBoxUsingApproxMethods(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+        State newbox = this.ourBox.clone();
+        for (Object o : newbox.getItems()) {
+            Particle p = (Particle) o;
+            this.approximator.moveGivenParticle(p, this.dx, this.dy, newbox);
+        }
+        return newbox;
+    }
+
     public State genNewBox(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         System.out.println("Box generating started");
         State newbox = new State("key", this.m);
@@ -159,12 +178,55 @@ public class CoreRun {
         return newbox;
     }
 
+    public State genNewBoxAlternated(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+        State newbox = this.ourBox.clone();
+        int debugcompute = 0;
+        int retries = 0;
+        for (Object o : newbox.getItems()) {
+            Particle p = (Particle) o;
+            //    double xt = p.getXValue();
+            //    double yt = p.getYValue();
+            double pdx = -dx + this.random.nextDouble() * 2 * dx;
+            double pdy = -dy + this.random.nextDouble() * 2 * dy;
+            this.m.move(p, pdx, pdy);
+            
+            while (canWeFindProblems(p, newbox)) {
+               
+                //        xt = p.getXValue();
+                //        yt = p.getYValue();
+                pdx = -dx + this.random.nextDouble() * 2 * dx;
+                pdy = -dy + this.random.nextDouble() * 2 * dy;
+                this.m.move(p, pdx, pdy);
+                retries++;
+            }
+            debugcompute++;
+        }
+        System.out.println("Total number of retries: " + retries);
+        return newbox;
+    }
+
+    public boolean canWeFindProblems(Particle p, State box) {
+        for (Object o : box.getItems()) {
+            Particle iterating = (Particle) o;
+            if (!iterating.equals(p)) {
+                if (p.retrieveR() + iterating.retrieveR() >= this.m.distance(p, iterating)) {
+                 //   System.out.println("This particle: " + p);
+                  //  System.out.println("Problematic particle: " + iterating);
+                    return true;
+                }
+
+            } else {
+            }
+
+        }
+        return false;
+    }
+
     public State genNewBoxAlternative(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         State newbox = new State("key", this.m);
         while (!tryGenNewBox(newbox, dx, dy)) {
             System.out.println("Trying new combination");
             newbox = new State("key", this.m);
-
         }
         return newbox;
     }
@@ -184,12 +246,10 @@ public class CoreRun {
             if (!newbox.addParticle(np)) {
                 System.out.println("Failed at: " + debugcounter);
                 return false;
-
             }
             debugcounter++;
         }
         return true;
-
     }
 
     //
@@ -207,36 +267,36 @@ public class CoreRun {
 
     public boolean iterate(double oldpotential, double newpotential) {
         double probability = this.simulator.computeProbability(newpotential, oldpotential);
-        System.out.print("probability: " + probability);
+        System.out.print("probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
         double g = this.random.nextDouble();
         if (g <= probability) {
-            System.out.println(" succeful!");
+            System.out.println(" result: succeful!");
             return true;
         }
-        System.out.println(" failed!");
+        System.out.println(" result: failed!");
         return false;
     }
 
     // Does full run n times
-    public void run(int n) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+    public void run(int n) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
         GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
         this.history.add(this.ourBox);
         this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox));
         for (int i = 1; i <= n; i++) {
-            State q = genNewBox(this.dx, this.dy);
+            System.out.print("Round " + i + ": ");
+            State q = genNewBoxAlternated(this.dx, this.dy);
+            //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
             double potpot = this.simulator.computeSumOfPotentials(q);
             q.setPotential(potpot);
-            System.out.print("Round " + i + ": ");
             while (!iterate(this.ourBox.returnPotential(), q.returnPotential())) {
-                q = genNewBox(this.dx, this.dy);
+                q = genNewBoxAlternated(this.dx, this.dy);
                 q.setPotential(this.simulator.computeSumOfPotentials(q));
-                System.out.println("Generating new one...");
+     //           System.out.println("Generating new one...");
             }
-            System.out.println("Reached end");
+     //       System.out.println("Reached end");
             this.history.add(q);
             this.ourBox = q;
         }
-
     }
 
     public History returnHistory() {

@@ -6,11 +6,13 @@
 package javachains;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import metrics.Metric;
 import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 
-public class State extends XYSeries {
+public class State extends XYSeries implements Cloneable {
 
     private Metric metric;
     private double potential;
@@ -19,14 +21,26 @@ public class State extends XYSeries {
         super(key);
         this.potential = 0;
     }
-
     public State(Comparable key, Metric metric) {
         super(key);
         this.metric = metric;
     }
+    @Override
+    public State clone() throws CloneNotSupportedException {
+        State newone = new State("key", metric);
+        for (Object o : super.getItems()) {
+            try {
+                Particle p = (Particle) o;
+                Particle q = p.clond();
+                newone.add(q);
+            } catch (NoSuchFieldException ex) {
+                Logger.getLogger(State.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return newone;
 
+    }
     public boolean isPossibleToAddParticle(Particle q) {
-
         for (Object qt : super.getItems()) {
             Particle p = (Particle) qt;
             if (p.retrieveR() + q.retrieveR() >= metric.distance(p, q)) {

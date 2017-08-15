@@ -6,6 +6,7 @@
 package pixelapproximation;
 
 import java.util.ArrayDeque;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Random;
@@ -19,14 +20,15 @@ import metrics.Metric;
  */
 public class FillerLogic {
 
-    private State currentState;
     private Metric m;
     private Random random;
     private int ApproXDepth;
 
     // Circle and line intersection methodology:
-    public FillerLogic(int approdepth) {
+    public FillerLogic(int approdepth, Random random, Metric m) {
         this.ApproXDepth = approdepth;
+        this.random = random;
+        this.m = m;
     }
 
     public double minimalDistanceSegmentCircleX(double x0, double x1, double c, Particle p, double r) throws NoSuchFieldException {
@@ -61,41 +63,94 @@ public class FillerLogic {
         }
     }
 
-    public Square initilizeFirstSquare(double x0, double x1, double y0, double y1, double r) throws NoSuchFieldException {
-
-        Square FirstSquare = new Square(x0, x1, y0, y1, 0);
+    public Square initilizeFirstSquare(double x0, double y0, double x1, double y1, double r, State curstate, Particle p) throws NoSuchFieldException {
+        Square FirstSquare = new Square(x0, y0, x1, y1, 0);
         FirstSquare.InitWalls();
-        SquareIteration(FirstSquare, r);
+        SquareIteration(FirstSquare, r, curstate, p);
         return FirstSquare;
     }
 
-    public void SquareIteration(Square s, double r) throws NoSuchFieldException {
+    public void SquareIteration(Square s, double r, State curstate, Particle p) throws NoSuchFieldException {
 
         double x0 = s.returnx0();
         double x1 = s.returnx1();
         double y0 = s.returny0();
         double y1 = s.returny1();
 
-        for (Object o : this.currentState.getItems()) {
+        for (Object o : curstate.getItems()) {
             Particle w = (Particle) o;
-            double radw = w.retrieveR();
-            double p1 = minimalDistanceSegmentCircleX(x0, x1, y0, w, r);
-            double p2 = minimalDistanceSegmentCircleX(x0, x1, y1, w, r);
-            double p3 = minimalDistanceSegmentCircleY(y0, y1, x0, w, r);
-            double p4 = minimalDistanceSegmentCircleY(y0, y1, x1, w, r);
-            if (doIntersect(r, radw, p1)) {
-                s.returnSouth().addToList(w);
-            }
-            if (doIntersect(r, radw, p2)) {
-                s.returnNorth().addToList(w);
-            }
-            if (doIntersect(r, radw, p3)) {
-                s.returnWest().addToList(w);
-            }
-            if (doIntersect(r, radw, p4)) {
-                s.returnEast().addToList(w);
-            }
+            if (!w.equalz(p)) {
+                double radw = w.retrieveR();
+                double p1 = minimalDistanceSegmentCircleX(x0, x1, y0, w, r);
+                double p2 = minimalDistanceSegmentCircleX(x0, x1, y1, w, r);
+                double p3 = minimalDistanceSegmentCircleY(y0, y1, x0, w, r);
+                double p4 = minimalDistanceSegmentCircleY(y0, y1, x1, w, r);
+                if (doIntersect(r, radw, p1)) {
+                    s.returnSouth().addToList(w);
+                    //       System.out.println("lol");
 
+                }
+                if (doIntersect(r, radw, p2)) {
+                    s.returnNorth().addToList(w);
+                }
+                if (doIntersect(r, radw, p3)) {
+                    s.returnWest().addToList(w);
+                }
+                if (doIntersect(r, radw, p4)) {
+                    s.returnEast().addToList(w);
+                }
+
+                if ((doIntersect(r, radw, p1)) || (doIntersect(r, radw, p2)) || (doIntersect(r, radw, p3)) || (doIntersect(r, radw, p4))) {
+                    s.returnProblematicList().add(w);
+                }
+
+            } 
+        }
+
+    }
+
+    public void SquareWallIteration(Square s, double r, String direction, Collection<Particle> lists) throws NoSuchFieldException {
+        double x0 = s.returnx0();
+        double x1 = s.returnx1();
+        double y0 = s.returny0();
+        double y1 = s.returny1();
+        switch (direction) {
+            case "north":
+                for (Particle p : lists) {
+                    double p1 = minimalDistanceSegmentCircleX(x0, x1, y0, p, r);
+                    if (doIntersect(p.retrieveR(), r, p1)) {
+                        s.returnNorth().addToList(p);
+                        s.returnProblematicList().add(p);
+                    }
+                }
+                break;
+            case "east":
+                for (Particle p : lists) {
+                    double p1 = minimalDistanceSegmentCircleY(y0, y1, x1, p, r);
+                    if (doIntersect(p.retrieveR(), r, p1)) {
+                        s.returnEast().addToList(p);
+                        s.returnProblematicList().add(p);
+                    }
+                }
+                break;
+            case "south":
+                for (Particle p : lists) {
+                    double p1 = minimalDistanceSegmentCircleX(x0, x1, y1, p, r);
+                    if (doIntersect(p.retrieveR(), r, p1)) {
+                        s.returnSouth().addToList(p);
+                        s.returnProblematicList().add(p);
+                    }
+                }
+                break;
+            case "west":
+                for (Particle p : lists) {
+                    double p1 = minimalDistanceSegmentCircleY(y0, y1, x0, p, r);
+                    if (doIntersect(p.retrieveR(), r, p1)) {
+                        s.returnWest().addToList(p);
+                        s.returnProblematicList().add(p);
+                    }
+                }
+                break;
         }
 
     }
@@ -123,22 +178,19 @@ public class FillerLogic {
         return true;
     }
 
-    public Particle moveGivenParticle(Particle moving, double dx, double dy) throws NoSuchFieldException {
+    public void moveGivenParticle(Particle moving, double dx, double dy, State curstate) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         double x0 = moving.getXValue() - dx;
         double y0 = moving.getYValue() - dy;
         double x1 = moving.getXValue() + dx;
         double y1 = moving.getYValue() + dy;
         double r = moving.retrieveR();
-        Square FirstSquare = initilizeFirstSquare(x0, y0, x1, y1, r);
+        Square FirstSquare = initilizeFirstSquare(x0, y0, x1, y1, r, curstate, moving);
         ArrayDeque<Square> AcceptedList = new ArrayDeque<Square>();
         ArrayDeque<Square> YellowList = new ArrayDeque<Square>();
-        if (FirstSquare.doesIntersectSomeone()) {
-            YellowList.add(FirstSquare);
-        } else {
-            AcceptedList.add(FirstSquare);
-        }
+        branchAddList(FirstSquare, YellowList, AcceptedList);
+        //    System.out.println("Reached this statement");
         while (!YellowList.isEmpty()) {
-
+            //        System.out.println("Reached this loop");
             Square iterating = YellowList.pollFirst();
             int depth = iterating.returnDepth();
             if (!iterating.doesIntersectSomeone()) {
@@ -162,56 +214,51 @@ public class FillerLogic {
                 Wall CenterSouth = new Wall();
                 Wall CenterEast = new Wall();
                 Wall CenterWest = new Wall();
-
                 first.setNorth(NorthOne);
                 first.setSouth(CenterWest);
                 first.setEast(CenterNorth);
                 first.setWest(WestOne);
-
                 second.setNorth(NorthTwo);
                 second.setSouth(CenterEast);
                 second.setEast(EastOne);
                 second.setWest(CenterNorth);
-
                 third.setNorth(CenterWest);
                 third.setSouth(SouthOne);
                 third.setEast(CenterSouth);
                 third.setWest(WestTwo);
-
                 fourth.setNorth(CenterEast);
                 fourth.setSouth(SouthTwo);
                 fourth.setEast(EastTwo);
                 fourth.setWest(CenterSouth);
-
-                SquareIteration(first, r);
-                SquareIteration(second, r);
-                SquareIteration(third, r);
-                SquareIteration(fourth, r);
-
-                if (first.doesIntersectSomeone()) {
-
-                } else {
-
-                }
-                if (second.doesIntersectSomeone()) {
-
-                } else {
-
-                }
-                if (third.doesIntersectSomeone()) {
-
-                } else {
-
-                }
-                if (fourth.doesIntersectSomeone()) {
-
-                } else {
-
-                }
+                SquareWallIteration(first, r, "north", iterating.returnNorth().returnList());
+                SquareWallIteration(first, r, "west", iterating.returnWest().returnList());
+                SquareWallIteration(first, r, "east", iterating.returnProblematicList());
+                SquareWallIteration(first, r, "south", iterating.returnProblematicList());
+                SquareWallIteration(second, r, "north", iterating.returnNorth().returnList());
+                SquareWallIteration(second, r, "south", iterating.returnProblematicList());
+                SquareWallIteration(second, r, "east", iterating.returnEast().returnList());
+                SquareWallIteration(third, r, "west", iterating.returnWest().returnList());
+                SquareWallIteration(third, r, "south", iterating.returnSouth().returnList());
+                SquareWallIteration(third, r, "east", iterating.returnProblematicList());
+                SquareWallIteration(fourth, r, "south", iterating.returnSouth().returnList());
+                SquareWallIteration(fourth, r, "east", iterating.returnEast().returnList());
+                branchAddList(first, YellowList, AcceptedList);
+                branchAddList(second, YellowList, AcceptedList);
+                branchAddList(third, YellowList, AcceptedList);
+                branchAddList(fourth, YellowList, AcceptedList);
             }
         }
+        generateRandomMovement(moving, AcceptedList);
+    }
 
-        return generateRandomMovement(moving, AcceptedList);
+    private void branchAddList(Square first, ArrayDeque<Square> YellowList, ArrayDeque<Square> AcceptedList) {
+
+        if (first.doesIntersectSomeone()) {
+            YellowList.add(first);
+        } else {
+            //    System.out.println("reach this");
+            AcceptedList.add(first);
+        }
     }
 
     public double average(double a, double b) {
@@ -219,7 +266,7 @@ public class FillerLogic {
 
     }
 
-    public Particle generateRandomMovement(Particle moving, ArrayDeque<Square> AcceptedList) throws NoSuchFieldException {
+    public void generateRandomMovement(Particle moving, ArrayDeque<Square> AcceptedList) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         double sum = computeAreaSum(AcceptedList);
         double wanted = this.random.nextDouble() * sum;
         double w = 0;
@@ -230,23 +277,23 @@ public class FillerLogic {
             double area = s.Area();
             w2 = w2 + area;
             if ((w <= wanted) && (wanted <= w2)) {
-                return generateRandomParticleInSquare(s, moving.retrieveR());
+                generateRandomParticleInSquare(moving, s);
+                return;
             }
             w = w + area;
-
         }
-        return null;
+        // return null;
     }
 
-    public Particle generateRandomParticleInSquare(Square s, double r) throws NoSuchFieldException {
+    public void generateRandomParticleInSquare(Particle p, Square s) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         double x0 = s.returnx0();
         double y0 = s.returny0();
         double x1 = s.returnx1();
         double y1 = s.returny1();
         double newX = x0 + this.random.nextDouble() * (x1 - x0);
         double newY = y0 + this.random.nextDouble() * (y1 - y0);
-        Particle newParticle = new Particle(newX, newY, r);
-        return newParticle;
+        p.forceChangeX(newX);
+        p.setY(newY);
     }
 
     public double computeAreaSum(ArrayDeque<Square> Accepted) {
