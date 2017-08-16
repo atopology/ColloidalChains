@@ -189,9 +189,9 @@ public class CoreRun {
             double pdx = -dx + this.random.nextDouble() * 2 * dx;
             double pdy = -dy + this.random.nextDouble() * 2 * dy;
             this.m.move(p, pdx, pdy);
-            
+
             while (canWeFindProblems(p, newbox)) {
-               
+
                 //        xt = p.getXValue();
                 //        yt = p.getYValue();
                 pdx = -dx + this.random.nextDouble() * 2 * dx;
@@ -210,8 +210,8 @@ public class CoreRun {
             Particle iterating = (Particle) o;
             if (!iterating.equals(p)) {
                 if (p.retrieveR() + iterating.retrieveR() >= this.m.distance(p, iterating)) {
-                 //   System.out.println("This particle: " + p);
-                  //  System.out.println("Problematic particle: " + iterating);
+                    //   System.out.println("This particle: " + p);
+                    //  System.out.println("Problematic particle: " + iterating);
                     return true;
                 }
 
@@ -224,9 +224,14 @@ public class CoreRun {
 
     public State genNewBoxAlternative(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         State newbox = new State("key", this.m);
-        while (!tryGenNewBox(newbox, dx, dy)) {
-            System.out.println("Trying new combination");
-            newbox = new State("key", this.m);
+        for (Object o : this.ourBox.getItems()) {
+            Particle p = (Particle) o;
+            double xt = p.getXValue();
+            double yt = p.getYValue();
+            double pdx = -dx + this.random.nextDouble() * 2 * dx;
+            double pdy = -dy + this.random.nextDouble() * 2 * dy;
+            Particle np = new Particle(coordinatefix(xt + pdx, this.xlength), coordinatefix(yt + pdy, this.ylength), p.retrieveR());
+            newbox.add(np);
         }
         return newbox;
     }
@@ -266,6 +271,9 @@ public class CoreRun {
     }
 
     public boolean iterate(double oldpotential, double newpotential) {
+        if (newpotential == Double.NEGATIVE_INFINITY) {
+            return false;
+        }
         double probability = this.simulator.computeProbability(newpotential, oldpotential);
         System.out.print("probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
         double g = this.random.nextDouble();
@@ -291,9 +299,9 @@ public class CoreRun {
             while (!iterate(this.ourBox.returnPotential(), q.returnPotential())) {
                 q = genNewBoxAlternated(this.dx, this.dy);
                 q.setPotential(this.simulator.computeSumOfPotentials(q));
-     //           System.out.println("Generating new one...");
+                //           System.out.println("Generating new one...");
             }
-     //       System.out.println("Reached end");
+            //       System.out.println("Reached end");
             this.history.add(q);
             this.ourBox = q;
         }

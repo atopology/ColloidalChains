@@ -127,7 +127,7 @@ public class BasicUi {
                 double dabv = Double.parseDouble(qav);
                 this.runningThing.setScale(dabv);
             } else if (k.equals("loaddefault")) {
-                parametrize(0.05, 0, 0.05, 0, 1000, 0.35, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
+                parametrize(0.05, 0, 0.05, 0, 1000, 0.0035, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
             }
         }
 
