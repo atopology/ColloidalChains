@@ -5,6 +5,7 @@
  */
 package javachains;
 
+import Stats.StateStats;
 import java.util.Random;
 import metrics.Metric;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -25,6 +26,7 @@ public class CoreRun {
     private History history;
     private double scalingfactor;
     private FillerLogic approximator;
+    private StateStats StateStats;
 
     public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy, int approxdepth) {
         this.simulator = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
@@ -44,6 +46,15 @@ public class CoreRun {
         this.simulator = new SimpleSimulation();
         this.history = new History();
         this.scalingfactor = 1.0;
+
+    }
+
+    public void setStateStats(StateStats s) {
+        this.StateStats = s;
+    }
+
+    public StateStats returnStatistic() {
+        return this.StateStats;
 
     }
 
@@ -123,19 +134,24 @@ public class CoreRun {
     }
 
     public void GenerateParticlesInBox(int n, double r, double x, double y, Metric m) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        this.ourBox = dataGenerator(n, r, x, y, m, this.random);
+
+    }
+
+    public State dataGenerator(int n, double r, double x, double y, Metric m, Random ra) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
         State data = new State("the data", m);
         for (int i = 0; i < n; i++) {
-            double tx = this.random.nextDouble() * x;
-            double ty = this.random.nextDouble() * y;
+            double tx = ra.nextDouble() * x;
+            double ty = ra.nextDouble() * y;
             Particle p = new Particle(tx, ty, r);
             while (!data.addParticle(p)) {
-                tx = this.random.nextDouble() * x;
-                ty = this.random.nextDouble() * y;
+                tx = ra.nextDouble() * x;
+                ty = ra.nextDouble() * y;
                 p.forceChangeX(tx);
                 p.setY(ty);
             }
         }
-        this.ourBox = data;
+        return data;
 
     }
     // Attempted moves are done here in "square". 
@@ -151,11 +167,11 @@ public class CoreRun {
     }
 
     public State genNewBox(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
-        System.out.println("Box generating started");
+        //   System.out.println("Box generating started");
         State newbox = new State("key", this.m);
         int debugcompute = 0;
         for (Object o : this.ourBox.getItems()) {
-            System.out.println("--Round + " + debugcompute);
+            //       System.out.println("--Round + " + debugcompute);
             Particle p = (Particle) o;
             double xt = p.getXValue();
             double yt = p.getYValue();
@@ -170,11 +186,11 @@ public class CoreRun {
                 pdy = -dy + this.random.nextDouble() * 2 * dy;
                 np.forceChangeX(coordinatefix(xt + pdx, this.xlength));
                 np.setY(coordinatefix(yt + pdy, this.ylength));
-                System.out.println("Change X: " + pdx + " Change Y: " + pdy);
+                //             System.out.println("Change X: " + pdx + " Change Y: " + pdy);
             }
             debugcompute++;
         }
-        System.out.println("Box generating ended");
+        //       System.out.println("Box generating ended");
         return newbox;
     }
 
@@ -201,7 +217,7 @@ public class CoreRun {
             }
             debugcompute++;
         }
-        System.out.println("Total number of retries: " + retries);
+        //    System.out.println("Total number of retries: " + retries);
         return newbox;
     }
 
@@ -275,23 +291,27 @@ public class CoreRun {
             return false;
         }
         double probability = this.simulator.computeProbability(newpotential, oldpotential);
-        System.out.print("probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
+        //     System.out.print("probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
         double g = this.random.nextDouble();
         if (g <= probability) {
-            System.out.println(" result: succeful!");
+            //        System.out.println(" result: succeful!");
             return true;
         }
-        System.out.println(" result: failed!");
+        //    System.out.println(" result: failed!");
         return false;
     }
 
     // Does full run n times
     public void run(int n) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+        System.out.println("Round 0: ");
         GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
         this.history.add(this.ourBox);
         this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox));
+        this.StateStats.Run(ourBox);
+        System.out.println(this.StateStats.returnStatistics().information());
+
         for (int i = 1; i <= n; i++) {
-            System.out.print("Round " + i + ": ");
+            System.out.println("Round " + i + ": ");
             State q = genNewBoxAlternated(this.dx, this.dy);
             //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
             double potpot = this.simulator.computeSumOfPotentials(q);
@@ -304,6 +324,8 @@ public class CoreRun {
             //       System.out.println("Reached end");
             this.history.add(q);
             this.ourBox = q;
+            this.StateStats.Run(ourBox);
+            System.out.println(this.StateStats.returnStatistics().information());
         }
     }
 

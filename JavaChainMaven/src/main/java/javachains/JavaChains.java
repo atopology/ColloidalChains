@@ -5,6 +5,8 @@
  */
 package javachains;
 
+import Experemental.AnalyticsExperement;
+import Stats.Statistics;
 import UserInterface.BasicUi;
 import UserInterface.CompicatedUI;
 import graphicss.DotPlot;
@@ -20,6 +22,8 @@ import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RefineryUtilities;
+import pixelapproximation.FillerLogic;
+import pixelapproximation.Square;
 import testpackage.XYLineChart_AWT;
 
 public class JavaChains {
@@ -27,7 +31,7 @@ public class JavaChains {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException, CloneNotSupportedException {
+    public static void main(String[] args) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, IOException, CloneNotSupportedException, Exception {
         // bugfixingmethod();
         //  functionvaluetest();
         //  functionPlotTest();
@@ -42,7 +46,23 @@ public class JavaChains {
         //   launchDotPlot();
         //     ActualParametersTest();
         //   interfaceTesting();
-        simpleInterfaceTesting();
+       // simpleInterfaceTesting();
+        //  intersectionStatistics();
+     //   AnalyticsTest();
+        DensityTest2();
+    }
+    
+    public static void DensityTest2() throws NoSuchFieldException
+    {
+    AnalyticsExperement a = new AnalyticsExperement();
+    a.SimpleExperement();
+    
+    }
+
+    public static void AnalyticsTest() throws NoSuchFieldException, Exception {
+        AnalyticsExperement a = new AnalyticsExperement();
+        a.IntegralTestOneRepeat();
+
     }
 
     public static void functionvaluetest(Metric m) {
@@ -75,7 +95,6 @@ public class JavaChains {
         chart.pack();
         RefineryUtilities.centerFrameOnScreen(chart);
         chart.setVisible(true);
-
     }
 
     public static void valuePowTest() {
@@ -176,15 +195,37 @@ public class JavaChains {
         BasicUi ui = new BasicUi();
         ui.run();
     }
-    
-    public static void TestCircleApproximation()
-    {
-    
-    
-    
+
+    public static void TestCircleApproximation() {
+
+    }
+
+    public static void intersectionStatistics() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        Random random = new Random();
+        CoreRun run = new CoreRun();
+        TorusMetric m = new TorusMetric(0, 0, 1.0, 1.0);
+        double r = computeRusingFraction(0.35, 1, 1000);
+        int times = 300;
+        Statistics stat = new Statistics();
+        for (int i = 0; i < times; i++) {
+            System.out.println(i);
+            State s = run.dataGenerator(1000, r, 1.0, 1.0, m, random);
+            FillerLogic filler = new FillerLogic(8, random, m);
+            double dx = 0.05 * r;
+            double dy = 0.05 * r;
+            Particle p = (Particle) s.getItems().get(0);
+            Square square = filler.initilizeFirstSquare(p.getXValue() - dx, p.getYValue() - dy, p.getXValue() + dx, p.getYValue() + dy, r, s, p);
+            stat.add(square.returnProblematicList().size());
+
+        }
+        System.out.println("Maximum:" + stat.max());
+        System.out.println("Minimum:" + stat.min());
+        System.out.println("Average:" + stat.Average());
     }
     
- 
+   
+    
+    
 
     //Dataset creator will be done here:
 }

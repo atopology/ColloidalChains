@@ -5,6 +5,7 @@
  */
 package UserInterface;
 
+import Stats.StateStats;
 import graphicss.DotPlot;
 import java.util.Random;
 import java.util.Scanner;
@@ -24,27 +25,27 @@ import pixelapproximation.FillerLogic;
  * @author Serafim
  */
 public class BasicUi {
-
+    
     private CoreRun runningThing;
     private Scanner scan;
     private int ApproxDepth;
-
+    
     public BasicUi() {
         this.ApproxDepth = 6;
         this.runningThing = new CoreRun();
         this.scan = new Scanner(System.in);
     }
-
+    
     public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
         System.out.println("Welcome to BasicUI of this program!");
-
+        
         boolean stillRun = true;
         while (stillRun) {
             System.out.print("Your command: ");
             String k = scan.next();
-
+            
             if (k.equals("setup")) {
-
+                
                 System.out.print("N:");
                 String q = scan.next();
                 int N = Integer.parseInt(q);
@@ -91,7 +92,7 @@ public class BasicUi {
                 q = scan.next();
                 double b2 = Double.parseDouble(q);
                 double DeltaA = Calculator.linearfunction(a2, b2, radius);
-
+                
                 setparameters(dx, dy, N, radius, xlength, ylength, DeltaA, EnergyA, DeltaR, EnergyR);
             } else if (k.equals("calculate")) {
                 if (!this.runningThing.ableToRun()) {
@@ -127,12 +128,12 @@ public class BasicUi {
                 double dabv = Double.parseDouble(qav);
                 this.runningThing.setScale(dabv);
             } else if (k.equals("loaddefault")) {
-                parametrize(0.05, 0, 0.05, 0, 1000, 0.0035, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
+                parametrize(0.05, 0, 0.05, 0, 1000, 0.45, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
             }
         }
-
+        
     }
-
+    
     private void setparameters(double dx, double dy, int N, double radius, double xlength, double ylength, double DeltaA, double EnergyA, double DeltaR, double EnergyR) {
         // adding parameters
         this.runningThing.setDx(dx);
@@ -149,7 +150,7 @@ public class BasicUi {
         s.setDeltaR(DeltaR);
         s.setEnergyR(EnergyR);
     }
-
+    
     private void parametrize(double dxa, double dxb, double dya, double dyb, int N, double fraction, double xlength, double ylength, double DeltaAa, double DeltaAb, double EnergyAa, double EnergyAb, double DeltaRa, double DeltaRb, double EnergyR) {
         // adding parameters
         double radius = Calculator.computeRusingFraction(fraction, xlength * ylength, N);
@@ -164,11 +165,12 @@ public class BasicUi {
         Random r = new Random();
         this.runningThing.setRandom(r);
         this.runningThing.setApproximator(new FillerLogic(this.ApproxDepth, r, m));
+        this.runningThing.setStateStats(new StateStats(2 * radius + Calculator.linearfunction(dxa, dxb, radius), m));
         SimpleSimulation s = this.runningThing.returnSimulator();
         s.setDeltaA(Calculator.linearfunction(DeltaAa, DeltaAb, radius));
         s.setEnergyA(Calculator.linearfunction(EnergyAa, EnergyAb, radius));
         s.setDeltaR(Calculator.linearfunction(DeltaRa, DeltaRb, radius));
         s.setEnergyR(EnergyR);
     }
-
+    
 }
