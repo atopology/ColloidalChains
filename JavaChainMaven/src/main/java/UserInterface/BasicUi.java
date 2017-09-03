@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.Scanner;
 import javachains.Calculator;
 import javachains.CoreRun;
+import javachains.Loader;
 import javachains.SimpleSimulation;
 import javachains.State;
 import metrics.Metric;
@@ -25,27 +26,34 @@ import pixelapproximation.FillerLogic;
  * @author Serafim
  */
 public class BasicUi {
-    
+
     private CoreRun runningThing;
     private Scanner scan;
     private int ApproxDepth;
-    
+    private Random r;
+    private Metric m;
+    private Loader loader;
+
     public BasicUi() {
         this.ApproxDepth = 6;
         this.runningThing = new CoreRun();
         this.scan = new Scanner(System.in);
+        this.m = new TorusMetric(0, 0, 1, 1);
+        this.r = new Random();
+        this.loader = new Loader(this.runningThing, m, r);
+
     }
-    
+
     public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
         System.out.println("Welcome to BasicUI of this program!");
-        
+
         boolean stillRun = true;
         while (stillRun) {
             System.out.print("Your command: ");
             String k = scan.next();
-            
+
             if (k.equals("setup")) {
-                
+
                 System.out.print("N:");
                 String q = scan.next();
                 int N = Integer.parseInt(q);
@@ -92,8 +100,7 @@ public class BasicUi {
                 q = scan.next();
                 double b2 = Double.parseDouble(q);
                 double DeltaA = Calculator.linearfunction(a2, b2, radius);
-                
-                setparameters(dx, dy, N, radius, xlength, ylength, DeltaA, EnergyA, DeltaR, EnergyR);
+                this.loader.InitilizeRun(dxa, dxb, dya, dyb, N, fraction, xlength, ylength, a2, b2, a1, b1, DeltaRa, DeltaRb, EnergyR);
             } else if (k.equals("calculate")) {
                 if (!this.runningThing.ableToRun()) {
                     System.out.println("Not able to run! Please enter all the parameters correctly");
@@ -128,49 +135,53 @@ public class BasicUi {
                 double dabv = Double.parseDouble(qav);
                 this.runningThing.setScale(dabv);
             } else if (k.equals("loaddefault")) {
-                parametrize(0.05, 0, 0.05, 0, 1000, 0.45, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
+                this.loader.InitilizeRun(0.05, 0, 0.05, 0, 1000, 0.45, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
+            } else if (k.equals("loadFromFile")) {
+
+            } else if (k.equals("printToFile")) {
+                
             }
+
         }
-        
+
     }
-    
-    private void setparameters(double dx, double dy, int N, double radius, double xlength, double ylength, double DeltaA, double EnergyA, double DeltaR, double EnergyR) {
-        // adding parameters
-        this.runningThing.setDx(dx);
-        this.runningThing.setDy(dy);
-        this.runningThing.setN(N);
-        this.runningThing.setR(radius);
-        this.runningThing.setX(xlength);
-        this.runningThing.setY(ylength);
-        Metric m = new TorusMetric(0.0, 0.0, xlength, ylength);
-        this.runningThing.setMetric(m);
-        SimpleSimulation s = this.runningThing.returnSimulator();
-        s.setDeltaA(DeltaA);
-        s.setEnergyA(EnergyA);
-        s.setDeltaR(DeltaR);
-        s.setEnergyR(EnergyR);
-    }
-    
-    private void parametrize(double dxa, double dxb, double dya, double dyb, int N, double fraction, double xlength, double ylength, double DeltaAa, double DeltaAb, double EnergyAa, double EnergyAb, double DeltaRa, double DeltaRb, double EnergyR) {
-        // adding parameters
-        double radius = Calculator.computeRusingFraction(fraction, xlength * ylength, N);
-        this.runningThing.setDx(Calculator.linearfunction(dxa, dxb, radius));
-        this.runningThing.setDy(Calculator.linearfunction(dya, dyb, radius));
-        this.runningThing.setN(N);
-        this.runningThing.setR(radius);
-        this.runningThing.setX(xlength);
-        this.runningThing.setY(ylength);
-        Metric m = new TorusMetric(0.0, 0.0, xlength, ylength);
-        this.runningThing.setMetric(m);
-        Random r = new Random();
-        this.runningThing.setRandom(r);
-        this.runningThing.setApproximator(new FillerLogic(this.ApproxDepth, r, m));
-        this.runningThing.setStateStats(new StateStats(2 * radius + Calculator.linearfunction(dxa, dxb, radius), m));
-        SimpleSimulation s = this.runningThing.returnSimulator();
-        s.setDeltaA(Calculator.linearfunction(DeltaAa, DeltaAb, radius));
-        s.setEnergyA(Calculator.linearfunction(EnergyAa, EnergyAb, radius));
-        s.setDeltaR(Calculator.linearfunction(DeltaRa, DeltaRb, radius));
-        s.setEnergyR(EnergyR);
-    }
-    
+
+//    private void setparameters(double dx, double dy, int N, double radius, double xlength, double ylength, double DeltaA, double EnergyA, double DeltaR, double EnergyR) {
+//        // adding parameters
+//        this.runningThing.setDx(dx);
+//        this.runningThing.setDy(dy);
+//        this.runningThing.setN(N);
+//        this.runningThing.setR(radius);
+//        this.runningThing.setX(xlength);
+//        this.runningThing.setY(ylength);
+//        Metric m = new TorusMetric(0.0, 0.0, xlength, ylength);
+//        this.runningThing.setMetric(m);
+//        SimpleSimulation s = this.runningThing.returnSimulator();
+//        s.setDeltaA(DeltaA);
+//        s.setEnergyA(EnergyA);
+//        s.setDeltaR(DeltaR);
+//        s.setEnergyR(EnergyR);
+//    }
+//    
+//    private void parametrize(double dxa, double dxb, double dya, double dyb, int N, double fraction, double xlength, double ylength, double DeltaAa, double DeltaAb, double EnergyAa, double EnergyAb, double DeltaRa, double DeltaRb, double EnergyR) {
+//        // adding parameters
+//        double radius = Calculator.computeRusingFraction(fraction, xlength * ylength, N);
+//        this.runningThing.setDx(Calculator.linearfunction(dxa, dxb, radius));
+//        this.runningThing.setDy(Calculator.linearfunction(dya, dyb, radius));
+//        this.runningThing.setN(N);
+//        this.runningThing.setR(radius);
+//        this.runningThing.setX(xlength);
+//        this.runningThing.setY(ylength);
+//        Metric m = new TorusMetric(0.0, 0.0, xlength, ylength);
+//        this.runningThing.setMetric(m);
+//        Random r = new Random();
+//        this.runningThing.setRandom(r);
+// //       this.runningThing.setApproximator(new FillerLogic(this.ApproxDepth, r, m));
+//        this.runningThing.setStateStats(new StateStats(2 * radius + Calculator.linearfunction(dxa, dxb, radius), m));
+//        SimpleSimulation s = this.runningThing.returnSimulator();
+//        s.setDeltaA(Calculator.linearfunction(DeltaAa, DeltaAb, radius));
+//        s.setEnergyA(Calculator.linearfunction(EnergyAa, EnergyAb, radius));
+//        s.setDeltaR(Calculator.linearfunction(DeltaRa, DeltaRb, radius));
+//        s.setEnergyR(EnergyR);
+//    }
 }

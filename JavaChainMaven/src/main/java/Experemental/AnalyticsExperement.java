@@ -137,6 +137,14 @@ public class AnalyticsExperement {
         throw new Exception("Something went badly wrong with integral");
 
     }
+    
+    public double specialCase()
+    {
+    
+    return 0;
+    }
+    
+    
 
    
 

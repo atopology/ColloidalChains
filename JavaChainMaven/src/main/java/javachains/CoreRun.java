@@ -7,6 +7,7 @@ package javachains;
 
 import Stats.StateStats;
 import java.util.Random;
+import javachains.BoxGenerator.BoxGenerator;
 import metrics.Metric;
 import org.jfree.data.xy.XYSeriesCollection;
 import pixelapproximation.FillerLogic;
@@ -27,6 +28,8 @@ public class CoreRun {
     private double scalingfactor;
     private FillerLogic approximator;
     private StateStats StateStats;
+    private BoxGenerator gen;
+    private boolean debugmessages;
 
     public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy, int approxdepth) {
         this.simulator = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
@@ -39,14 +42,25 @@ public class CoreRun {
         this.dx = dx;
         this.dy = dy;
         this.scalingfactor = 1.0;
+        this.debugmessages = false;
 
+    }
+    
+    public void setdebugmessages(boolean k)
+    {
+    this.debugmessages = k;
     }
 
     public CoreRun() {
         this.simulator = new SimpleSimulation();
         this.history = new History();
         this.scalingfactor = 1.0;
+        this.debugmessages = false;
 
+    }
+
+    public void setGenerator(BoxGenerator g) {
+        this.gen = g;
     }
 
     public void setStateStats(StateStats s) {
@@ -196,8 +210,7 @@ public class CoreRun {
 
     public State genNewBoxAlternated(double dx, double dy) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
         State newbox = this.ourBox.clone();
-        int debugcompute = 0;
-        int retries = 0;
+
         for (Object o : newbox.getItems()) {
             Particle p = (Particle) o;
             //    double xt = p.getXValue();
@@ -213,9 +226,7 @@ public class CoreRun {
                 pdx = -dx + this.random.nextDouble() * 2 * dx;
                 pdy = -dy + this.random.nextDouble() * 2 * dy;
                 this.m.move(p, pdx, pdy);
-                retries++;
             }
-            debugcompute++;
         }
         //    System.out.println("Total number of retries: " + retries);
         return newbox;
@@ -312,12 +323,12 @@ public class CoreRun {
 
         for (int i = 1; i <= n; i++) {
             System.out.println("Round " + i + ": ");
-            State q = genNewBoxAlternated(this.dx, this.dy);
+            State q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy);
             //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
             double potpot = this.simulator.computeSumOfPotentials(q);
             q.setPotential(potpot);
             while (!iterate(this.ourBox.returnPotential(), q.returnPotential())) {
-                q = genNewBoxAlternated(this.dx, this.dy);
+                q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy);
                 q.setPotential(this.simulator.computeSumOfPotentials(q));
                 //           System.out.println("Generating new one...");
             }

@@ -49,7 +49,8 @@ public class JavaChains {
        // simpleInterfaceTesting();
         //  intersectionStatistics();
      //   AnalyticsTest();
-        DensityTest2();
+    //    DensityTest2();
+        intersectionStatistics();
     }
     
     public static void DensityTest2() throws NoSuchFieldException
@@ -204,8 +205,8 @@ public class JavaChains {
         Random random = new Random();
         CoreRun run = new CoreRun();
         TorusMetric m = new TorusMetric(0, 0, 1.0, 1.0);
-        double r = computeRusingFraction(0.35, 1, 1000);
-        int times = 300;
+        double r = computeRusingFraction(0.5, 1, 1000);
+        int times = 50;
         Statistics stat = new Statistics();
         for (int i = 0; i < times; i++) {
             System.out.println(i);

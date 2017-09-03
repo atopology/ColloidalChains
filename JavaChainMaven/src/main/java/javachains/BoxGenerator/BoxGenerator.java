@@ -4,17 +4,18 @@
  * and open the template in the editor.
  */
 
-package javachains;
+package javachains.BoxGenerator;
+
+import java.util.Random;
+import javachains.State;
+import metrics.Metric;
 
 /**
  *
  * @author Serafim
  */
-public class SystemInitilizator {
+public interface BoxGenerator {
     
-    public SystemInitilizator()
-    {
-    
-    }
+    public State generateNewState(State s,Random r, Metric m,double dx, double dy );
     
 }
