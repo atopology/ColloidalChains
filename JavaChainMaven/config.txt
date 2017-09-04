@@ -1,0 +1,15 @@
+dxa= 0.05
+dxb= 0
+dya= 0.05
+dyb= 0
+N= 1000
+fraction= 0.35
+xlength= 1.0
+ylength= 1.0
+DeltaAa= 0.05
+DeltaAb= 0
+EnergyAa= 0
+EnergyAb= -7
+DeltaRa= 0.5
+DeltaRb= 0
+EnergyR= 3.75

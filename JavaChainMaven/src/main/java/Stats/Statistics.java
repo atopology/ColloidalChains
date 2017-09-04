@@ -14,10 +14,16 @@ import java.util.LinkedList;
  */
 public class Statistics {
 
-    LinkedList<Integer> entities;
+    private LinkedList<Integer> entities;
+    private String startString;
 
     public Statistics() {
         this.entities = new LinkedList<Integer>();
+        this.startString = "";
+    }
+
+    public void setStartString(String k) {
+        this.startString = k;
     }
 
     public void add(int i) {
@@ -50,7 +56,8 @@ public class Statistics {
 
     public String information() {
         String newline = System.getProperty("line.separator");
-        String k = "Maximum: " + max() + newline;
+        String k = this.startString;
+        k = k + "Maximum: " + max() + newline;
         k = k + "Minimum: " + min() + newline;
         k = k + "Average: " + Average() + newline;
 

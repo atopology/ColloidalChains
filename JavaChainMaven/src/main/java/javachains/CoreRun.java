@@ -45,10 +45,9 @@ public class CoreRun {
         this.debugmessages = false;
 
     }
-    
-    public void setdebugmessages(boolean k)
-    {
-    this.debugmessages = k;
+
+    public void setdebugmessages(boolean k) {
+        this.debugmessages = k;
     }
 
     public CoreRun() {
@@ -302,27 +301,40 @@ public class CoreRun {
             return false;
         }
         double probability = this.simulator.computeProbability(newpotential, oldpotential);
-        //     System.out.print("probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
+        if (this.debugmessages) {
+            System.out.print("Trying with probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
+        }
         double g = this.random.nextDouble();
         if (g <= probability) {
-            //        System.out.println(" result: succeful!");
+            if (this.debugmessages) {
+                System.out.println(" result: succeful!");
+            }
             return true;
         }
-        //    System.out.println(" result: failed!");
+        if (this.debugmessages) {
+            System.out.println(" result: failed!");
+        }
         return false;
     }
 
     // Does full run n times
     public void run(int n) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
-        System.out.println("Round 0: ");
+        if (this.debugmessages) {
+            System.out.println("Round 0: ");
+        }
         GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
         this.history.add(this.ourBox);
         this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox));
         this.StateStats.Run(ourBox);
-        System.out.println(this.StateStats.returnStatistics().information());
+        
+        if (this.debugmessages) {
+            System.out.println(this.StateStats.returnStatistics().information());
+        }
 
         for (int i = 1; i <= n; i++) {
-            System.out.println("Round " + i + ": ");
+            if (this.debugmessages) {
+                System.out.println("Round " + i + ": ");
+            }
             State q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy);
             //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
             double potpot = this.simulator.computeSumOfPotentials(q);
@@ -336,7 +348,10 @@ public class CoreRun {
             this.history.add(q);
             this.ourBox = q;
             this.StateStats.Run(ourBox);
-            System.out.println(this.StateStats.returnStatistics().information());
+            if (this.debugmessages) {
+                System.out.println(this.StateStats.returnStatistics().information());
+            }
+
         }
     }
 

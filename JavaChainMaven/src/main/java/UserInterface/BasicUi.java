@@ -7,10 +7,14 @@ package UserInterface;
 
 import Stats.StateStats;
 import graphicss.DotPlot;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.Random;
 import java.util.Scanner;
 import javachains.Calculator;
 import javachains.CoreRun;
+import javachains.FileManager;
 import javachains.Loader;
 import javachains.SimpleSimulation;
 import javachains.State;
@@ -33,6 +37,7 @@ public class BasicUi {
     private Random r;
     private Metric m;
     private Loader loader;
+    private FileManager filemanager;
 
     public BasicUi() {
         this.ApproxDepth = 6;
@@ -41,10 +46,11 @@ public class BasicUi {
         this.m = new TorusMetric(0, 0, 1, 1);
         this.r = new Random();
         this.loader = new Loader(this.runningThing, m, r);
+        this.filemanager = new FileManager();
 
     }
 
-    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException, IOException {
         System.out.println("Welcome to BasicUI of this program!");
 
         boolean stillRun = true;
@@ -135,13 +141,56 @@ public class BasicUi {
                 double dabv = Double.parseDouble(qav);
                 this.runningThing.setScale(dabv);
             } else if (k.equals("loaddefault")) {
-                this.loader.InitilizeRun(0.05, 0, 0.05, 0, 1000, 0.45, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
+                this.loader.InitilizeRun(0.05, 0, 0.05, 0, 1000, 0.35, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
             } else if (k.equals("loadFromFile")) {
 
-            } else if (k.equals("printToFile")) {
-                
-            }
+            } else if (k.equals("switch")) {
+                k = this.scan.next();
+                if (k.equals("effective")) {
+                    this.loader.switchToEffective();
+                }
+                if (k.equals("standart")) {
+                    this.loader.switchToStandart();
+                }
+            } else if (k.equals("debugmessages")) {
+                k = this.scan.next();
+                if (k.equals("on")) {
+                    this.runningThing.setdebugmessages(true);
+                }
+                if (k.equals("off")) {
+                    this.runningThing.setdebugmessages(false);
 
+                }
+            } else if (k.equals("PrintToFile")) {
+                if (this.runningThing.returnHistory() != null) {
+
+                    k = this.scan.next();
+                    if (k.equals("all")) {
+                        this.filemanager.WriteWholeHistroy(this.runningThing.returnHistory());
+
+                    } else {
+                        int i = Integer.parseInt(k);
+                        State s = this.runningThing.returnHistory().returnHistory().get(i);
+                        if (s == null) {
+                            System.out.println("Out of bounds error");
+                        } else {
+                            this.filemanager.WriteSingleState(s, i);
+                        }
+                    }
+
+                } else {
+                    System.out.println("error no history avaible");
+                }
+            } else if (k.equals("Readparamters")) {
+                k = this.scan.next();
+                if (this.filemanager.LoadParamters(loader, k)) {
+                    System.out.println("Succeful!");
+
+                } else {
+                    System.out.println("Failed");
+                }
+
+            }
         }
 
     }

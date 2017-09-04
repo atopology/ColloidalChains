@@ -11,7 +11,9 @@ import UserInterface.BasicUi;
 import UserInterface.CompicatedUI;
 import graphicss.DotPlot;
 import graphicss.FrameXY;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Random;
@@ -50,7 +52,8 @@ public class JavaChains {
         //  intersectionStatistics();
      //   AnalyticsTest();
     //    DensityTest2();
-        intersectionStatistics();
+  //      intersectionStatistics();
+        simpleInterfaceTesting();
     }
     
     public static void DensityTest2() throws NoSuchFieldException
@@ -192,7 +195,7 @@ public class JavaChains {
         ui.run();
     }
 
-    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException {
         BasicUi ui = new BasicUi();
         ui.run();
     }
