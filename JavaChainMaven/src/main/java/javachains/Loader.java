@@ -55,7 +55,11 @@ public class Loader {
         asd.setx1(xlength);
         asd.sety1(ylength);
         //       this.runningThing.setApproximator(new FillerLogic(this.ApproxDepth, r, m));
-        this.runningThing.setStateStats(new StateStats(2 * radius + Calculator.linearfunction(dxa, dxb, radius), m));
+        double distancee = 2 * radius + Math.sqrt(2)*Calculator.linearfunction(dxa, dxb, radius);
+        StateStats stats = new StateStats(distancee, m);
+        stats.returnStatistics().setStartString("Number of particles which can potentially collide at distance: " + distancee + System.getProperty("line.separator"));
+        
+        this.runningThing.setStateStats(stats);
         SimpleSimulation s = this.runningThing.returnSimulator();
         s.setDeltaA(Calculator.linearfunction(DeltaAa, DeltaAb, radius));
         s.setEnergyA(Calculator.linearfunction(EnergyAa, EnergyAb, radius));

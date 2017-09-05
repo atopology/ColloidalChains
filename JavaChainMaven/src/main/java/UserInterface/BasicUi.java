@@ -47,6 +47,8 @@ public class BasicUi {
         this.r = new Random();
         this.loader = new Loader(this.runningThing, m, r);
         this.filemanager = new FileManager();
+        
+
 
     }
 
@@ -181,7 +183,7 @@ public class BasicUi {
                 } else {
                     System.out.println("error no history avaible");
                 }
-            } else if (k.equals("Readparamters")) {
+            } else if (k.equals("readparamters")) {
                 k = this.scan.next();
                 if (this.filemanager.LoadParamters(loader, k)) {
                     System.out.println("Succeful!");
