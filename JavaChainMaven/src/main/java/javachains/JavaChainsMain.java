@@ -28,7 +28,7 @@ import pixelapproximation.FillerLogic;
 import pixelapproximation.Square;
 import testpackage.XYLineChart_AWT;
 
-public class JavaChains {
+public class JavaChainsMain {
 
     /**
      * @param args the command line arguments
@@ -195,7 +195,7 @@ public class JavaChains {
         ui.run();
     }
 
-    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException {
+    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException, IOException {
         BasicUi ui = new BasicUi();
         ui.run();
     }

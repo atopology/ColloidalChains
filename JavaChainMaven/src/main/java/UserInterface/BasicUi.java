@@ -108,14 +108,17 @@ public class BasicUi {
                 q = scan.next();
                 double b2 = Double.parseDouble(q);
                 double DeltaA = Calculator.linearfunction(a2, b2, radius);
-                this.loader.InitilizeRun(dxa, dxb, dya, dyb, N, fraction, xlength, ylength, a2, b2, a1, b1, DeltaRa, DeltaRb, EnergyR);
+                System.out.print("Timesteps: ");
+                q = scan.next();
+                long timestep = Long.parseLong(q);
+                this.loader.InitilizeRun(dxa, dxb, dya, dyb, N, fraction, xlength, ylength, a2, b2, a1, b1, DeltaRa, DeltaRb, EnergyR,timestep);
             } else if (k.equals("calculate")) {
                 if (!this.runningThing.ableToRun()) {
                     System.out.println("Not able to run! Please enter all the parameters correctly");
                 } else {
                     this.runningThing.reset();
                     int n = scan.nextInt();
-                    this.runningThing.run(n);
+                    this.runningThing.run();
                 }
             } else if (k.equals("plot")) {
                 int m = scan.nextInt();
@@ -143,23 +146,28 @@ public class BasicUi {
                 double dabv = Double.parseDouble(qav);
                 this.runningThing.setScale(dabv);
             } else if (k.equals("loaddefault")) {
-                this.loader.InitilizeRun(0.05, 0, 0.05, 0, 1000, 0.35, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75);
+                this.loader.InitilizeRun(0.05, 0, 0.05, 0, 1000, 0.35, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75,1000000);
             } else if (k.equals("loadFromFile")) {
 
             } else if (k.equals("switch")) {
                 k = this.scan.next();
                 if (k.equals("effective")) {
+                  
                     this.loader.switchToEffective();
+                      System.out.println("Switched to effective mode ");
                 }
                 if (k.equals("standart")) {
                     this.loader.switchToStandart();
+                    System.out.println("Switched to standard mode");
                 }
             } else if (k.equals("debugmessages")) {
                 k = this.scan.next();
                 if (k.equals("on")) {
+                    System.out.println("debugmessages activated");
                     this.runningThing.setdebugmessages(true);
                 }
                 if (k.equals("off")) {
+                    System.out.println("debugmessages turned off");
                     this.runningThing.setdebugmessages(false);
 
                 }
@@ -183,7 +191,7 @@ public class BasicUi {
                 } else {
                     System.out.println("error no history avaible");
                 }
-            } else if (k.equals("readparamters")) {
+            } else if (k.equals("readparameters")) {
                 k = this.scan.next();
                 if (this.filemanager.LoadParamters(loader, k)) {
                     System.out.println("Succeful!");

@@ -41,7 +41,7 @@ public class Loader {
         this.runningThing.setGenerator(standartgen);
     }
 
-    public void InitilizeRun(double dxa, double dxb, double dya, double dyb, int N, double fraction, double xlength, double ylength, double DeltaAa, double DeltaAb, double EnergyAa, double EnergyAb, double DeltaRa, double DeltaRb, double EnergyR) {
+    public void InitilizeRun(double dxa, double dxb, double dya, double dyb, int N, double fraction, double xlength, double ylength, double DeltaAa, double DeltaAb, double EnergyAa, double EnergyAb, double DeltaRa, double DeltaRb, double EnergyR, long timesteps) {
         double radius = Calculator.computeRusingFraction(fraction, xlength * ylength, N);
         this.runningThing.setDx(Calculator.linearfunction(dxa, dxb, radius));
         this.runningThing.setDy(Calculator.linearfunction(dya, dyb, radius));
@@ -51,6 +51,7 @@ public class Loader {
         this.runningThing.setY(ylength);
         this.runningThing.setMetric(m);
         this.runningThing.setRandom(r);
+        this.runningThing.setTimeSteps(timesteps);
         TorusMetric asd = (TorusMetric) this.m;
         asd.setx1(xlength);
         asd.sety1(ylength);

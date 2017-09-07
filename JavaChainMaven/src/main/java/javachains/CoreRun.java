@@ -30,6 +30,8 @@ public class CoreRun {
     private StateStats StateStats;
     private BoxGenerator gen;
     private boolean debugmessages;
+    private long timestepsmax;
+    private long curtime;
 
     public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy, int approxdepth) {
         this.simulator = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
@@ -44,6 +46,10 @@ public class CoreRun {
         this.scalingfactor = 1.0;
         this.debugmessages = false;
 
+    }
+
+    public void setTimeSteps(long p) {
+        this.timestepsmax = p;
     }
 
     public void setdebugmessages(boolean k) {
@@ -318,30 +324,37 @@ public class CoreRun {
     }
 
     // Does full run n times
-    public void run(int n) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
         if (this.debugmessages) {
-            System.out.println("Round 0: ");
-        }
+            System.out.println("Run starting ");
+       }
+        this.curtime = 0;
         GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
         this.history.add(this.ourBox);
         this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox));
         this.StateStats.Run(ourBox);
-        
+
         if (this.debugmessages) {
+            System.out.println("Initial state:");
             System.out.println(this.StateStats.returnStatistics().information());
         }
 
-        for (int i = 1; i <= n; i++) {
-            if (this.debugmessages) {
-                System.out.println("Round " + i + ": ");
-            }
+        while (this.curtime <= this.timestepsmax) {
+//            if (this.debugmessages) {
+//                System.out.println("Round " + i + ": ");
+//            }
+
             State q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy);
+            this.curtime++;
             //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
             double potpot = this.simulator.computeSumOfPotentials(q);
             q.setPotential(potpot);
-            while (!iterate(this.ourBox.returnPotential(), q.returnPotential())) {
+            while ((!iterate(this.ourBox.returnPotential(), q.returnPotential())) && (this.curtime <= this.timestepsmax)) {
+
                 q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy);
+                this.curtime++;
                 q.setPotential(this.simulator.computeSumOfPotentials(q));
+
                 //           System.out.println("Generating new one...");
             }
             //       System.out.println("Reached end");
@@ -349,6 +362,7 @@ public class CoreRun {
             this.ourBox = q;
             this.StateStats.Run(ourBox);
             if (this.debugmessages) {
+                System.out.println("Statistic at time: " + this.curtime);
                 System.out.println(this.StateStats.returnStatistics().information());
             }
 

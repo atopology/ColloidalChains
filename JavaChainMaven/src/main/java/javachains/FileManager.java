@@ -62,15 +62,15 @@ public class FileManager {
         try {
             FileReader fr = new FileReader(nameoffile);
             BufferedReader br = new BufferedReader(fr);
-            double[] parameters = new double[15];
-            for (int i = 0; i <= 14; i++) {
+            double[] parameters = new double[16];
+            for (int i = 0; i <= 15; i++) {
                 String line = br.readLine();
                 String word[] = line.split(" ");
                 double value = Double.parseDouble(word[1]);
                 parameters[i] = value;
                 
             }
-            l.InitilizeRun(parameters[0], parameters[1], parameters[2], parameters[3], (int) Math.round(parameters[4]), parameters[5], parameters[6], parameters[7], parameters[8], parameters[9],parameters[10], parameters[11], parameters[12], parameters[13],parameters[14]);
+            l.InitilizeRun(parameters[0], parameters[1], parameters[2], parameters[3], (int) Math.round(parameters[4]), parameters[5], parameters[6], parameters[7], parameters[8], parameters[9],parameters[10], parameters[11], parameters[12], parameters[13],parameters[14],(long) parameters[15]);
             
         } catch (FileNotFoundException e) {
             return false;
