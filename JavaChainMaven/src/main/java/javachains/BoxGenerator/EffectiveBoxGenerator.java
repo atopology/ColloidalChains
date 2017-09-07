@@ -8,6 +8,7 @@ package javachains.BoxGenerator;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javachains.CoreRun;
 import javachains.Particle;
 import javachains.State;
 import metrics.Metric;
@@ -19,7 +20,7 @@ import metrics.Metric;
 public class EffectiveBoxGenerator implements BoxGenerator {
 
     @Override
-    public State generateNewState(State s, Random random, Metric m, double dx, double dy) {
+    public State generateNewState(State s, Random random, Metric m, double dx, double dy, CoreRun run) {
         try {
             State newbox = s.clone();
             for (Object o : newbox.getItems()) {

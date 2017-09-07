@@ -7,6 +7,7 @@
 package javachains.BoxGenerator;
 
 import java.util.Random;
+import javachains.CoreRun;
 import javachains.State;
 import metrics.Metric;
 
@@ -16,6 +17,6 @@ import metrics.Metric;
  */
 public interface BoxGenerator {
     
-    public State generateNewState(State s,Random r, Metric m,double dx, double dy );
+    public State generateNewState(State s,Random r, Metric m,double dx, double dy, CoreRun run );
     
 }

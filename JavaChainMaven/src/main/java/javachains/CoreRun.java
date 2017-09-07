@@ -307,19 +307,19 @@ public class CoreRun {
             return false;
         }
         double probability = this.simulator.computeProbability(newpotential, oldpotential);
-        if (this.debugmessages) {
-            System.out.print("Trying with probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
-        }
+//        if (this.debugmessages) {
+//            System.out.print("Trying with probability: " + probability + " | oldpotential: " + oldpotential + " | newpotential: " + newpotential);
+//        }
         double g = this.random.nextDouble();
         if (g <= probability) {
-            if (this.debugmessages) {
-                System.out.println(" result: succeful!");
-            }
+//            if (this.debugmessages) {
+//                System.out.println(" result: succeful!");
+//            }
             return true;
         }
-        if (this.debugmessages) {
-            System.out.println(" result: failed!");
-        }
+//        if (this.debugmessages) {
+//            System.out.println(" result: failed!");
+//        }
         return false;
     }
 
@@ -332,11 +332,11 @@ public class CoreRun {
         GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
         this.history.add(this.ourBox);
         this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox));
-        this.StateStats.Run(ourBox);
+    //    this.StateStats.Run(ourBox);
 
         if (this.debugmessages) {
-            System.out.println("Initial state:");
-            System.out.println(this.StateStats.returnStatistics().information());
+            System.out.println("Initilization succefully completed");
+       //     System.out.println(this.StateStats.returnStatistics().information());
         }
 
         while (this.curtime <= this.timestepsmax) {
@@ -344,14 +344,14 @@ public class CoreRun {
 //                System.out.println("Round " + i + ": ");
 //            }
 
-            State q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy);
+            State q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy,this);
             this.curtime++;
             //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
             double potpot = this.simulator.computeSumOfPotentials(q);
             q.setPotential(potpot);
             while ((!iterate(this.ourBox.returnPotential(), q.returnPotential())) && (this.curtime <= this.timestepsmax)) {
 
-                q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy);
+                q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy,this);
                 this.curtime++;
                 q.setPotential(this.simulator.computeSumOfPotentials(q));
 
@@ -360,11 +360,15 @@ public class CoreRun {
             //       System.out.println("Reached end");
             this.history.add(q);
             this.ourBox = q;
-            this.StateStats.Run(ourBox);
+           // this.StateStats.Run(ourBox);
             if (this.debugmessages) {
-                System.out.println("Statistic at time: " + this.curtime);
-                System.out.println(this.StateStats.returnStatistics().information());
+                System.out.println("Success at time: " + this.curtime);
             }
+            
+//            if (this.debugmessages) {
+//                System.out.println("Statistic at time: " + this.curtime);
+//                System.out.println(this.StateStats.returnStatistics().information());
+//            }
 
         }
     }
@@ -379,6 +383,12 @@ public class CoreRun {
 
     public void reset() {
         this.history.reset();
+    }
+    
+    public void addTime(long d)
+    {
+    this.curtime = this.curtime + d;
+    
     }
 
 }
