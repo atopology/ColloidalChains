@@ -13,4 +13,4 @@ EnergyAb= -7
 DeltaRa= 2.0
 DeltaRb= 0
 EnergyR= 3.75
-Steps= 100000
+Steps= 10000

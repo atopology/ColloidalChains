@@ -53,7 +53,11 @@ public class JavaChainsMain {
      //   AnalyticsTest();
     //    DensityTest2();
   //      intersectionStatistics();
-        simpleInterfaceTesting();
+        
+    //    conctest1();
+        
+        
+       simpleInterfaceTesting();
     }
     
     public static void DensityTest2() throws NoSuchFieldException
@@ -156,7 +160,7 @@ public class JavaChainsMain {
         XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(n, r, x, y, m);
         State box = (State) data.getSeries().get(0);
         double energysum = simulation.computeSumOfPotentials(box);
-        DotPlot plotplot = new DotPlot("this is title", "Sum of energies: " + energysum, r, data);
+        DotPlot plotplot = new DotPlot("this is title", "Sum of energies: " + energysum, r, data,1.0);
         plotplot.pack();
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);
@@ -178,7 +182,7 @@ public class JavaChainsMain {
         XYSeriesCollection data = dataGenerator.GenerateParticlesInBox(N, r, x, y, m);
         State box = (State) data.getSeries().get(0);
         double energysum = simulation.computeSumOfPotentials(box);
-        DotPlot plotplot = new DotPlot("This is title", "Total potential: " + energysum, r, data);
+        DotPlot plotplot = new DotPlot("This is title", "Total potential: " + energysum, r, data,1.0);
         plotplot.pack();
         RefineryUtilities.centerFrameOnScreen(plotplot);
         plotplot.setVisible(true);
@@ -195,13 +199,19 @@ public class JavaChainsMain {
         ui.run();
     }
 
-    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException, IOException {
+    public static void simpleInterfaceTesting() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException, IOException, InterruptedException {
         BasicUi ui = new BasicUi();
         ui.run();
     }
 
     public static void TestCircleApproximation() {
 
+    }
+    
+    public static void conctest1()
+    {
+    CoreRun run = new CoreRun();
+    run.Initilizethreads(10);
     }
 
     public static void intersectionStatistics() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {

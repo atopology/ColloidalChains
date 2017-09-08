@@ -38,6 +38,7 @@ public class BasicUi {
     private Metric m;
     private Loader loader;
     private FileManager filemanager;
+    private double scale;
 
     public BasicUi() {
         this.ApproxDepth = 6;
@@ -47,12 +48,11 @@ public class BasicUi {
         this.r = new Random();
         this.loader = new Loader(this.runningThing, m, r);
         this.filemanager = new FileManager();
-        
-
+        this.scale = 1.0;
 
     }
 
-    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException, IOException {
+    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, FileNotFoundException, UnsupportedEncodingException, IOException, InterruptedException {
         System.out.println("Welcome to BasicUI of this program!");
 
         boolean stillRun = true;
@@ -111,20 +111,38 @@ public class BasicUi {
                 System.out.print("Timesteps: ");
                 q = scan.next();
                 long timestep = Long.parseLong(q);
-                this.loader.InitilizeRun(dxa, dxb, dya, dyb, N, fraction, xlength, ylength, a2, b2, a1, b1, DeltaRa, DeltaRb, EnergyR,timestep);
+                this.loader.InitilizeRun(dxa, dxb, dya, dyb, N, fraction, xlength, ylength, a2, b2, a1, b1, DeltaRa, DeltaRb, EnergyR, timestep);
             } else if (k.equals("calculate")) {
                 if (!this.runningThing.ableToRun()) {
                     System.out.println("Not able to run! Please enter all the parameters correctly");
                 } else {
-                    this.runningThing.reset();
-                    int n = scan.nextInt();
-                    this.runningThing.run();
+                    String pam = scan.next();
+                    if (pam.equals("classic")) {
+                        String q = scan.next();
+                        int i = Integer.parseInt(q);
+                        this.runningThing.reset();
+                        long startTime = System.currentTimeMillis();
+                        this.runningThing.runClassic(i);
+                        long endTime = System.currentTimeMillis();
+                        long totalTime = endTime - startTime;
+                        System.out.println("Number of succeful states:" + this.runningThing.returnHistory().returnHistory().size());
+                        System.out.println("Total computation time:" + totalTime);
+                    } else if (pam.equals("onebyone")) {
+                        this.runningThing.reset();
+                        long startTime = System.currentTimeMillis();
+                        this.runningThing.runAnother();
+                         long endTime = System.currentTimeMillis();
+                        long totalTime = endTime - startTime;
+                        System.out.println("Number of saved states" + this.runningThing.returnHistory().returnHistory().size());
+                         System.out.println("Total computation time:" + totalTime);
+                    }
                 }
             } else if (k.equals("plot")) {
                 int m = scan.nextInt();
                 if (m >= this.runningThing.returnHistory().returnHistory().size()) {
                     System.out.println("out of bounds error");
                 } else {
+
                     String title = "Particle simulation";
                     State s = this.runningThing.returnHistory().returnHistory().get(m);
                     double potential = s.returnPotential();
@@ -132,29 +150,25 @@ public class BasicUi {
                     double r = this.runningThing.returnR();
                     XYSeriesCollection data = new XYSeriesCollection();
                     data.addSeries(s);
-                    DotPlot plotplot = new DotPlot(title, subtitle, r, data);
-                    plotplot.setScaling(this.runningThing.returnScale());
+                    DotPlot plotplot = new DotPlot(title, subtitle, r, data, this.scale);
                     plotplot.pack();
                     RefineryUtilities.centerFrameOnScreen(plotplot);
                     plotplot.setVisible(true);
                 }
             } else if (k.equals("exit")) {
                 System.exit(0);
-            } else if (k.equals("setscaling")) {
-                System.out.print("scale:");
+            } else if (k.equals("setscale")) {
                 String qav = this.scan.next();
                 double dabv = Double.parseDouble(qav);
-                this.runningThing.setScale(dabv);
+                this.scale = dabv;
             } else if (k.equals("loaddefault")) {
-                this.loader.InitilizeRun(0.05, 0, 0.05, 0, 1000, 0.35, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75,1000000);
-            } else if (k.equals("loadFromFile")) {
-
+                this.loader.InitilizeRun(0.05, 0, 0.05, 0, 1000, 0.35, 1.0, 1.0, 0.05, 0, 0, -7, 0.5, 0, 3.75, 1000000);
             } else if (k.equals("switch")) {
                 k = this.scan.next();
                 if (k.equals("effective")) {
-                  
+
                     this.loader.switchToEffective();
-                      System.out.println("Switched to effective mode ");
+                    System.out.println("Switched to effective mode ");
                 }
                 if (k.equals("standart")) {
                     this.loader.switchToStandart();
@@ -171,12 +185,15 @@ public class BasicUi {
                     this.runningThing.setdebugmessages(false);
 
                 }
-            } else if (k.equals("PrintToFile")) {
+            } else if (k.equals("printtofile")) {
                 if (this.runningThing.returnHistory() != null) {
 
                     k = this.scan.next();
                     if (k.equals("all")) {
-                        this.filemanager.WriteWholeHistroy(this.runningThing.returnHistory());
+
+                        System.out.print("path: ");
+                        k = this.scan.next();
+                        this.filemanager.WriteWholeHistroy(this.runningThing.returnHistory(), k);
 
                     } else {
                         int i = Integer.parseInt(k);
@@ -200,6 +217,9 @@ public class BasicUi {
                     System.out.println("Failed");
                 }
 
+            } else if (k.equals("CurrentRadius")) {
+
+                System.out.println("Current radius is: " + this.runningThing.returnRadius());
             }
         }
 

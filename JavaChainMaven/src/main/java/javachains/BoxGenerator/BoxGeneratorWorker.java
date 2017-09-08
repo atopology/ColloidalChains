@@ -10,18 +10,47 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javachains.CoreRun;
 import javachains.Particle;
-import javachains.State;
 import metrics.Metric;
 
 /**
  *
  * @author Serafim
  */
-public class StandartBoxGenerator implements BoxGenerator {
+public class BoxGeneratorWorker extends Thread {
+
+    private CoreRun run;
+    private int workernumber;
+
+    public BoxGeneratorWorker(CoreRun run) {
+        this.run = run;
+    }
 
     @Override
-    public State generateNewState(State s, Random r, Metric m, double dx, double dy, CoreRun run) {
-        State newbox = new State("key", m);
+    public void run() {
+
+        javachains.State curbox = this.run.returnCurBox();
+        javachains.State q = null;
+        while ((!this.run.iterate(curbox, q)) && (this.run.returnCurTime() <= this.run.returnTimeStepsMax()) && (this.run.returnBreakPoint() == false)) {
+
+            q = generateNewState(curbox);
+            this.run.addTime(1);
+            //      q.setPotential(this.simulator.computeSumOfPotentials(q));
+
+            //           System.out.println("Generating new one...");
+        }
+        if ((q != null) && (this.run.returnBreakPoint() == false)) {
+            this.run.setCoffeeBreak(true);
+            this.run.setCurBox(q);
+        }
+    }
+
+    public javachains.State generateNewState(javachains.State s) {
+        Random r = this.run.returnRandom();
+        Metric m = this.run.returnMetric();
+        double dx = this.run.returnDx();
+        double dy = this.run.returnDy();
+
+        javachains.State newbox = new javachains.State("key", m);
         for (Object o : s.getItems()) {
             try {
                 Particle p = (Particle) o;
@@ -40,7 +69,7 @@ public class StandartBoxGenerator implements BoxGenerator {
         return newbox;
     }
 
-    public boolean computeThings(Particle p, State newbox, CoreRun run) {
+    public boolean computeThings(Particle p, javachains.State newbox, CoreRun run) {
         double pot = newbox.returnPotential();
         for (Object o : newbox.getItems()) {
             Particle q = (Particle) o;

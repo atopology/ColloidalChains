@@ -8,6 +8,7 @@ package javachains;
 import Stats.StateStats;
 import java.util.Random;
 import javachains.BoxGenerator.BoxGenerator;
+import javachains.BoxGenerator.BoxGeneratorWorker;
 import metrics.Metric;
 import org.jfree.data.xy.XYSeriesCollection;
 import pixelapproximation.FillerLogic;
@@ -32,6 +33,9 @@ public class CoreRun {
     private boolean debugmessages;
     private long timestepsmax;
     private long curtime;
+    private BoxGeneratorWorker[] boxgeneratorworkers;
+    private boolean breaknpoint;
+    private int rejections;
 
     public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy, int approxdepth) {
         this.simulator = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
@@ -46,6 +50,21 @@ public class CoreRun {
         this.scalingfactor = 1.0;
         this.debugmessages = false;
 
+    }
+
+    public double returnRadius() {
+        return this.r;
+    }
+
+    public boolean returnBreakPoint() {
+        return this.breaknpoint;
+    }
+
+    public void Initilizethreads(int n) {
+        this.boxgeneratorworkers = new BoxGeneratorWorker[n];
+        for (int i = 0; i < n; i++) {
+            this.boxgeneratorworkers[i] = new BoxGeneratorWorker(this);
+        }
     }
 
     public void setTimeSteps(long p) {
@@ -302,7 +321,7 @@ public class CoreRun {
 
     }
 
-    public boolean iterate(double oldpotential, double newpotential) {
+    public boolean uiterate(double oldpotential, double newpotential) {
         if (newpotential == Double.NEGATIVE_INFINITY) {
             return false;
         }
@@ -321,56 +340,140 @@ public class CoreRun {
 //            System.out.println(" result: failed!");
 //        }
         return false;
+
+    }
+
+    public boolean iterate(State old, State newone) {
+        if ((old == null) || (newone == null)) {
+            return false;
+        }
+        double oldpotential = old.returnPotential();
+        double newpotential = newone.returnPotential();
+        return uiterate(oldpotential, newpotential);
     }
 
     // Does full run n times
-    public void run() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+    public void runClassic(int n) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException, InterruptedException {
         if (this.debugmessages) {
             System.out.println("Run starting ");
-       }
+        }
         this.curtime = 0;
         GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
         this.history.add(this.ourBox);
-        this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox));
-    //    this.StateStats.Run(ourBox);
+        this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox) / 2);
+        //    this.StateStats.Run(ourBox);
 
         if (this.debugmessages) {
             System.out.println("Initilization succefully completed");
-       //     System.out.println(this.StateStats.returnStatistics().information());
+            //     System.out.println(this.StateStats.returnStatistics().information());
         }
 
         while (this.curtime <= this.timestepsmax) {
-//            if (this.debugmessages) {
-//                System.out.println("Round " + i + ": ");
-//            }
-
-            State q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy,this);
-            this.curtime++;
-            //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
-            double potpot = this.simulator.computeSumOfPotentials(q);
-            q.setPotential(potpot);
-            while ((!iterate(this.ourBox.returnPotential(), q.returnPotential())) && (this.curtime <= this.timestepsmax)) {
-
-                q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy,this);
-                this.curtime++;
-                q.setPotential(this.simulator.computeSumOfPotentials(q));
-
-                //           System.out.println("Generating new one...");
+            Initilizethreads(n);
+            this.breaknpoint = false;
+            for (BoxGeneratorWorker boxgeneratorworker : this.boxgeneratorworkers) {
+                boxgeneratorworker.start();
             }
-            //       System.out.println("Reached end");
-            this.history.add(q);
-            this.ourBox = q;
-           // this.StateStats.Run(ourBox);
+            for (BoxGeneratorWorker boxgeneratorworker : this.boxgeneratorworkers) {
+                boxgeneratorworker.join();
+            }
             if (this.debugmessages) {
-                System.out.println("Success at time: " + this.curtime);
+                System.out.println("Succeful simulation at time: " + this.curtime);
             }
-            
-//            if (this.debugmessages) {
-//                System.out.println("Statistic at time: " + this.curtime);
-//                System.out.println(this.StateStats.returnStatistics().information());
-//            }
+
+            if ((this.ourBox != null) && (this.returnCurTime() <= this.returnTimeStepsMax())) {
+                this.history.add(ourBox);
+            }
 
         }
+    }
+
+    public void runAnother() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+        if (this.debugmessages) {
+            System.out.println("Run starting ");
+        }
+        this.curtime = 0;
+        GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
+        this.history.add(this.ourBox);
+        this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox) / 2);
+        State newrun = this.ourBox.clone();
+        newrun.setPotential(this.ourBox.returnPotential());
+        this.ourBox = newrun;
+        if (this.debugmessages) {
+            System.out.println("Ready: " + this.curtime + "/" + this.timestepsmax);
+        }
+        while (this.curtime <= this.timestepsmax) {
+            this.rejections = 0;
+            if (this.debugmessages) {
+                System.out.println("Ready: " + this.curtime + "/" + this.timestepsmax);
+            }
+            for (Object o : this.ourBox.getItems()) {
+                Particle p = (Particle) o;
+                Particle np = p.clond();
+                double pdx = -this.dx + this.random.nextDouble() * 2 * dx;
+                double pdy = -this.dy + this.random.nextDouble() * 2 * dy;
+                m.move(np, pdx, pdy);
+                StateFix(p, np);
+            }
+            if (this.debugmessages) {
+                System.out.println("Rejections: " + this.rejections + "/" + this.N);
+            }
+            this.curtime++;
+
+        }
+        this.history.add(ourBox);
+
+    }
+
+    public void StateFix(Particle old, Particle newone) throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        double curPotential = this.ourBox.returnPotential();
+        for (Object o : this.ourBox.getItems()) {
+            Particle iterating = (Particle) o;
+            if (!iterating.equals(old)) {
+
+                double potpot = this.simulator.computeEnergy(newone, iterating);
+                if (potpot == Double.NEGATIVE_INFINITY) {
+                    this.rejections++;
+                    return;
+
+                }
+
+                curPotential = curPotential - this.simulator.computeEnergy(old, iterating) + this.simulator.computeEnergy(newone, iterating);
+            }
+
+        }
+        boolean k = uiterate(this.ourBox.returnPotential(), curPotential);
+        if (k) {
+            double x = newone.getXValue();
+            double y = newone.getYValue();
+            old.forceChangeX(x);
+            old.setY(y);
+            this.ourBox.setPotential(curPotential);
+        } else {
+            rejections++;
+            //    System.out.println("here");
+        }
+
+    }
+
+    public Metric returnMetric() {
+        return this.m;
+    }
+
+    public Random returnRandom() {
+        return this.random;
+    }
+
+    public double returndx() {
+        return this.dx;
+    }
+
+    public double returndy() {
+        return this.dy;
+    }
+
+    public void setCoffeeBreak(boolean k) {
+        this.breaknpoint = k;
     }
 
     public History returnHistory() {
@@ -384,11 +487,56 @@ public class CoreRun {
     public void reset() {
         this.history.reset();
     }
-    
-    public void addTime(long d)
-    {
-    this.curtime = this.curtime + d;
-    
+
+    public void addTime(long d) {
+        this.curtime = this.curtime + d;
+
+    }
+
+    public long returnTimeStepsMax() {
+        return this.timestepsmax;
+    }
+
+    public long returnCurTime() {
+        return this.curtime;
+    }
+
+    public State returnCurBox() {
+        return this.ourBox;
+    }
+
+    public void setCurBox(State p) {
+        this.ourBox = p;
     }
 
 }
+
+//     if (this.debugmessages) {
+////                System.out.println("Round " + i + ": ");
+////            }
+//            State q = null;
+//            //        System.out.println("Validity check: " + "First: " + q.getItems().get(0) + "Second: " + this.ourBox.getItems().get(0));
+////            double potpot = this.simulator.computeSumOfPotentials(q);
+////            q.setPotential(potpot);
+//            while ((!iterate(this.ourBox, q)) && (this.curtime <= this.timestepsmax)) {
+//
+//                q = this.gen.generateNewState(this.ourBox, this.random, this.m, this.dx, this.dy, this);
+//                this.curtime++;
+//          //      q.setPotential(this.simulator.computeSumOfPotentials(q));
+//
+//                //           System.out.println("Generating new one...");
+//            }
+//            //       System.out.println("Reached end");
+//            if (q != null) {
+//                this.history.add(q);
+//            }
+//            this.ourBox = q;
+//            // this.StateStats.Run(ourBox);
+//            if (this.debugmessages) {
+//                System.out.println("Success at time: " + this.curtime);
+//            }
+//
+////            if (this.debugmessages) {
+////                System.out.println("Statistic at time: " + this.curtime);
+////                System.out.println(this.StateStats.returnStatistics().information());
+////            }

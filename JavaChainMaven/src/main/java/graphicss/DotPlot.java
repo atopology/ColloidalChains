@@ -27,19 +27,20 @@ import org.jfree.util.ShapeUtilities;
 public class DotPlot extends JFrame {
 
     private double fixedR;
-    private double scalingfactor;
+    private double scalingfactorz;
 
-    public DotPlot(String title, String subtitle, double radius, XYDataset dataset) {
+    public DotPlot(String title, String subtitle, double radius, XYDataset dataset, double s) {
         super(title);
         this.fixedR = radius;
-        JPanel panel = creatPanel(dataset, subtitle);
+        this.scalingfactorz = s;
+        JPanel panel = creatPanel(dataset, subtitle, this.scalingfactorz);
         panel.setPreferredSize(new Dimension(560, 367));
         setContentPane(panel);
-        this.scalingfactor = 1.0;
         this.setDefaultCloseOperation(HIDE_ON_CLOSE);
     }
 
-    public JPanel creatPanel(XYDataset dataset, String subtitle) {
+    public JPanel creatPanel(XYDataset dataset, String subtitle, double factor) {
+        System.out.println("Scaling factor: " + factor);
 
         JFreeChart jfreechart = ChartFactory.createScatterPlot(subtitle,
                 "X", "Y", dataset, PlotOrientation.VERTICAL, true, true, false);
@@ -47,8 +48,8 @@ public class DotPlot extends JFrame {
 
         XYPlot plot = (XYPlot) jfreechart.getPlot();
         XYItemRenderer renderer = plot.getRenderer();
-        renderer.setSeriesShape(0, new Ellipse2D.Double(0.0, 0.0, 1.0, 1.0));
-    // Remember to uncomment this lateR:  
+        renderer.setSeriesShape(0, new Ellipse2D.Double(0.0, 0.0, factor, factor));
+        // Remember to uncomment this lateR:  
         //   renderer.setSeriesShape(0, new Ellipse2D.Double(0.0, 0.0, this.fixedR * this.scalingfactor, this.fixedR * scalingfactor));
 
 //        xyPlot.setRenderer(new XYLineAndShapeRenderer(false, true){
@@ -76,7 +77,7 @@ public class DotPlot extends JFrame {
     }
 
     public void setScaling(double s) {
-        this.scalingfactor = s;
+        this.scalingfactorz = s;
     }
 
 }

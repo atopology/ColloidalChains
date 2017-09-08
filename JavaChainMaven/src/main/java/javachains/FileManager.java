@@ -29,9 +29,9 @@ public class FileManager {
         return timeStamp;
     }
 
-    public void WriteWholeHistroy(History h) throws FileNotFoundException, UnsupportedEncodingException {
+    public void WriteWholeHistroy(History h, String path) throws FileNotFoundException, UnsupportedEncodingException {
         String p = generateTimeStamp();
-        PrintWriter writer = new PrintWriter("history" + p + ".txt", "UTF-8");
+        PrintWriter writer = new PrintWriter(path + "history" + p + ".txt", "UTF-8");
         int i = 0;
         for (State s : h.boxStates) {
             WriteState(s, i, writer);
