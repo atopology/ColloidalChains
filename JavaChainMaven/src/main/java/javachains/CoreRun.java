@@ -6,6 +6,7 @@
 package javachains;
 
 import Stats.StateStats;
+import Stats.Statistics;
 import java.util.Random;
 import javachains.BoxGenerator.BoxGenerator;
 import javachains.BoxGenerator.BoxGeneratorWorker;
@@ -36,6 +37,9 @@ public class CoreRun {
     private BoxGeneratorWorker[] boxgeneratorworkers;
     private boolean breaknpoint;
     private int rejections;
+    private State savedState;
+    private Statistics stat;
+    private boolean globallock;
 
     public CoreRun(double x, double y, double energyR, double energyA, double deltaR, double deltaA, Random random, Metric m, int N, double r, double dx, double dy, int approxdepth) {
         this.simulator = new SimpleSimulation(energyR, energyA, deltaR, deltaA, m);
@@ -50,6 +54,30 @@ public class CoreRun {
         this.scalingfactor = 1.0;
         this.debugmessages = false;
 
+    }
+
+    public void setGloballock(boolean k) {
+        this.globallock = k;
+    }
+
+    public boolean returnLock() {
+        return this.globallock;
+    }
+
+    public void initstat() {
+        this.stat = new Statistics();
+    }
+
+    public Statistics returnStat() {
+        return this.stat;
+    }
+
+    public State returnSaved() {
+        return this.savedState;
+    }
+
+    public void setSaveadState(State p) {
+        this.savedState = p;
     }
 
     public double returnRadius() {
@@ -388,12 +416,8 @@ public class CoreRun {
         }
     }
 
-    public void runAnother() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
-        if (this.debugmessages) {
-            System.out.println("Run starting ");
-        }
-        this.curtime = 0;
-        GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
+    public void runAnotherFromFixedState(State f) throws CloneNotSupportedException, NoSuchFieldException, IllegalArgumentException, IllegalAccessException {
+        this.ourBox = f;
         this.history.add(this.ourBox);
         this.ourBox.setPotential(this.simulator.computeSumOfPotentials(this.ourBox) / 2);
         State newrun = this.ourBox.clone();
@@ -418,10 +442,25 @@ public class CoreRun {
             if (this.debugmessages) {
                 System.out.println("Rejections: " + this.rejections + "/" + this.N);
             }
+            this.stat.add(rejections);
             this.curtime++;
 
         }
         this.history.add(ourBox);
+
+    }
+
+    public void runAnother() throws NoSuchFieldException, IllegalArgumentException, IllegalAccessException, CloneNotSupportedException {
+        if (this.debugmessages) {
+            System.out.println("Run starting ");
+        }
+        this.curtime = 0;
+        GenerateParticlesInBox(this.N, this.r, this.xlength, this.ylength, this.m);
+        runAnotherFromFixedState(this.ourBox);
+
+    }
+
+    public void EffectiveOnebyOne() {
 
     }
 
@@ -435,7 +474,6 @@ public class CoreRun {
                 if (potpot == Double.NEGATIVE_INFINITY) {
                     this.rejections++;
                     return;
-
                 }
 
                 curPotential = curPotential - this.simulator.computeEnergy(old, iterating) + this.simulator.computeEnergy(newone, iterating);
@@ -507,6 +545,11 @@ public class CoreRun {
 
     public void setCurBox(State p) {
         this.ourBox = p;
+    }
+    
+    public void addRejections(int p)
+    {
+    this.rejections = this.rejections+p;
     }
 
 }

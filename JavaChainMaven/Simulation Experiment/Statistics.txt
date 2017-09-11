@@ -1,0 +1,43 @@
+400 first:
+
+Box0:
+Maximum: 275
+Minimum: 14
+Average: 180.01112472188194
+
+Box1:
+Maximum: 331
+Minimum: 18
+Average: 216.3622159446014
+
+Box2:
+Maximum: 398 
+Minimum: 13
+Average: 272.6773080672983
+
+Box3:
+Maximum: 455 
+Minimum: 30 
+Average: 322.6370590735232
+
+400-1200
+
+Box0:
+Maximum: 367
+Minimum: 180
+Average: 274.3526039433004
+
+Box1:
+Maximum: 437
+Minimum: 240
+Average: 344.2644061299489
+
+Box2:
+Maximum: 488 
+Minimum: 294
+Average: 396.84099299172505
+
+Box3:
+Maximum: 540
+Minimum: 344 
+Average: 451.97974183548473

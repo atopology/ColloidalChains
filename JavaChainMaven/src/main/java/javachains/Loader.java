@@ -52,6 +52,7 @@ public class Loader {
         this.runningThing.setMetric(m);
         this.runningThing.setRandom(r);
         this.runningThing.setTimeSteps(timesteps);
+        this.runningThing.initstat();
         TorusMetric asd = (TorusMetric) this.m;
         asd.setx1(xlength);
         asd.sety1(ylength);

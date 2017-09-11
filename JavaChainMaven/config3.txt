@@ -12,5 +12,5 @@ EnergyAa= 0
 EnergyAb= -7
 DeltaRa= 2.0
 DeltaRb= 0
-EnergyR= 15
-Steps= 160000
+EnergyR= 3.75
+Steps= 120000

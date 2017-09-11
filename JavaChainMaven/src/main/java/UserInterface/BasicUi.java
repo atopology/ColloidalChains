@@ -10,6 +10,7 @@ import graphicss.DotPlot;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 import javachains.Calculator;
@@ -131,10 +132,10 @@ public class BasicUi {
                         this.runningThing.reset();
                         long startTime = System.currentTimeMillis();
                         this.runningThing.runAnother();
-                         long endTime = System.currentTimeMillis();
+                        long endTime = System.currentTimeMillis();
                         long totalTime = endTime - startTime;
                         System.out.println("Number of saved states" + this.runningThing.returnHistory().returnHistory().size());
-                         System.out.println("Total computation time:" + totalTime);
+                        System.out.println("Total computation time:" + totalTime);
                     }
                 }
             } else if (k.equals("plot")) {
@@ -143,17 +144,8 @@ public class BasicUi {
                     System.out.println("out of bounds error");
                 } else {
 
-                    String title = "Particle simulation";
                     State s = this.runningThing.returnHistory().returnHistory().get(m);
-                    double potential = s.returnPotential();
-                    String subtitle = "Potential of the system: " + potential;
-                    double r = this.runningThing.returnR();
-                    XYSeriesCollection data = new XYSeriesCollection();
-                    data.addSeries(s);
-                    DotPlot plotplot = new DotPlot(title, subtitle, r, data, this.scale);
-                    plotplot.pack();
-                    RefineryUtilities.centerFrameOnScreen(plotplot);
-                    plotplot.setVisible(true);
+                    plotBox(s);
                 }
             } else if (k.equals("exit")) {
                 System.exit(0);
@@ -220,7 +212,39 @@ public class BasicUi {
             } else if (k.equals("CurrentRadius")) {
 
                 System.out.println("Current radius is: " + this.runningThing.returnRadius());
+            } else if (k.equals("save")) {
+                int index = Integer.parseInt(this.scan.next());
+                ArrayList<State> states = this.runningThing.returnHistory().returnHistory();
+                this.runningThing.setSaveadState(states.get(index));
+                System.out.println("Operation completed succefully!");
+
+                //  this.runningThing.setSaveadState();
+            } else if (k.equals("loadstate")) {
+                String bambam = this.scan.next();
+                int number = Integer.parseInt((this.scan.next()));
+                int j = this.filemanager.LoadState(bambam, runningThing, number);
+                if (j == -1) {
+                    System.out.println("Error loading file");
+                } else {
+                    System.out.println("Number of particles loaded: " + j);
+                }
+
+            } else if (k.equals("resetStats")) {
+                this.runningThing.initstat();
+            } else if (k.equals("printstat")) {
+                System.out.println(this.runningThing.returnStat().information());
+            } else if (k.equals("runsaved")) {
+                this.runningThing.reset();
+                long startTime = System.currentTimeMillis();
+                this.runningThing.runAnotherFromFixedState(this.runningThing.returnSaved());
+                long endTime = System.currentTimeMillis();
+                long totalTime = endTime - startTime;
+                System.out.println("Number of saved states" + this.runningThing.returnHistory().returnHistory().size());
+                System.out.println("Total computation time:" + totalTime);
+            } else if (k.equals("plotsaved")) {
+                plotBox(this.runningThing.returnSaved());
             }
+
         }
 
     }
@@ -263,4 +287,16 @@ public class BasicUi {
 //        s.setDeltaR(Calculator.linearfunction(DeltaRa, DeltaRb, radius));
 //        s.setEnergyR(EnergyR);
 //    }
+    private void plotBox(State s) {
+        String title = "Particle simulation";
+        double potential = s.returnPotential();
+        String subtitle = "Potential of the system: " + potential;
+        double r = this.runningThing.returnR();
+        XYSeriesCollection data = new XYSeriesCollection();
+        data.addSeries(s);
+        DotPlot plotplot = new DotPlot(title, subtitle, r, data, this.scale);
+        plotplot.pack();
+        RefineryUtilities.centerFrameOnScreen(plotplot);
+        plotplot.setVisible(true);
+    }
 }

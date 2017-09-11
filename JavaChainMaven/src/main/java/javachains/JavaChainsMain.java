@@ -232,7 +232,7 @@ public class JavaChainsMain {
             stat.add(square.returnProblematicList().size());
 
         }
-        System.out.println("Maximum:" + stat.max());
+        System.out.println("Maximum:" + stat.max()); 
         System.out.println("Minimum:" + stat.min());
         System.out.println("Average:" + stat.Average());
     }
